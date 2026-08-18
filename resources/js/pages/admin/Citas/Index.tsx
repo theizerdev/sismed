@@ -32,6 +32,8 @@ import {
     PawPrint,
     X,
     ArrowRight,
+    PanelLeftClose,
+    PanelLeftOpen,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -280,12 +282,22 @@ export default function Index({
     const [tipoAtencionFilter, setTipoAtencionFilter] = useState(filters.tipo_atencion_id || 'all');
     const [estadoFilter, setEstadoFilter] = useState(filters.estado || 'all');
     const [viewMode, setViewMode] = useState<'week' | 'day' | 'month' | 'table'>('week');
-    const [slotInterval, setSlotInterval] = useState<number>(30); // 15, 20, 30, 60 min
+    const [showSidebar, setShowSidebar] = useState<boolean>(true);
 
     // ── FullCalendar & Navigation State ───────────────────────────────────────
     const calendarRef = useRef<any>(null);
     const [calendarTitle, setCalendarTitle] = useState('');
     const [currentDate, setCurrentDate] = useState<Date>(new Date());
+
+    // ── Update Calendar Size when Sidebar Toggles ─────────────────────────────
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (calendarRef.current) {
+                calendarRef.current.getApi().updateSize();
+            }
+        }, 150);
+        return () => clearTimeout(timer);
+    }, [showSidebar]);
 
     // ── Mapping & Filtering Events for FullCalendar ──────────────────────────
     const fullCalendarEvents = useMemo(() => {
@@ -459,6 +471,7 @@ export default function Index({
     const renderEventContent = (eventInfo: any) => {
         const props = eventInfo.event.extendedProps;
         const isList = eventInfo.view.type.startsWith('list');
+        const isMonth = eventInfo.view.type.startsWith('dayGrid');
 
         if (isList) {
             return (
@@ -473,26 +486,30 @@ export default function Index({
             );
         }
 
-        return (
-            <div className="p-1 w-full h-full text-white font-medium text-[11px] overflow-hidden flex flex-col justify-between leading-tight group/fc-event">
-                <div className="bg-black/25 font-bold px-1.5 py-0.5 rounded text-[10px] truncate flex items-center justify-between">
-                    <span className="truncate">{props.paciente_nombre}</span>
-                    {props.link_virtual && <Video className="h-3 w-3 shrink-0 ml-1 text-blue-200" />}
+        if (isMonth) {
+            return (
+                <div className="px-1.5 py-0.5 w-full text-white font-medium text-[11px] truncate flex items-center gap-1 rounded" style={{ backgroundColor: eventInfo.event.backgroundColor }}>
+                    <span className="font-bold text-[10px]">{eventInfo.timeText}</span>
+                    <span className="truncate text-[10px] font-semibold">{props.paciente_nombre}</span>
                 </div>
-                <div className="opacity-95 text-[10px] font-semibold truncate mt-0.5">
+            );
+        }
+
+        return (
+            <div className="p-1.5 w-full h-full text-white font-medium text-xs overflow-hidden flex flex-col justify-between leading-tight group/fc-event rounded-lg">
+                <div className="bg-black/30 font-bold px-1.5 py-0.5 rounded text-[11px] truncate flex items-center justify-between shadow-xs">
+                    <span className="truncate">{props.paciente_nombre}</span>
+                    {props.link_virtual && <Video className="h-3.5 w-3.5 shrink-0 ml-1 text-blue-200" />}
+                </div>
+                <div className="opacity-95 text-[10px] font-medium truncate my-0.5">
                     {props.medico_nombre}
                 </div>
-                <div className="text-[9px] font-mono opacity-85 mt-0.5 flex items-center justify-between">
+                <div className="text-[9px] font-mono opacity-90 flex items-center justify-between pt-0.5">
                     <span>{eventInfo.timeText}</span>
-                    <span className="capitalize text-[9px] font-bold opacity-90">{props.estado_formateado}</span>
+                    <span className="capitalize font-extrabold text-[9px] px-1 py-0.2 rounded bg-black/20">{props.estado_formateado}</span>
                 </div>
             </div>
         );
-    };
-
-    const getSlotDurationString = (intervalMin: number) => {
-        if (intervalMin === 60) return '01:00:00';
-        return `00:${intervalMin < 10 ? '0' + intervalMin : intervalMin}:00`;
     };
 
     // ── Modal States ──────────────────────────────────────────────────────────
@@ -888,125 +905,101 @@ export default function Index({
 
     return (
         <div className="space-y-6">
-            {/* Header del Módulo */}
-            <ModuleHeader
-                title={__('Agenda Médica & Citas')}
-                description={__('Gestión de citas médicas en tiempo real, control de sobre-reservas y estado de atención.')}
-                icon={<CalendarIcon className="h-6 w-6" />}
-                action={
-                    <Button onClick={() => handleCreateClick()} className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-md">
-                        <Plus className="h-4 w-4 mr-2" />
-                        {__('Agendar Nueva Cita')}
-                    </Button>
-                }
-            />
-
-            {/* Tarjetas de Estadísticas del Día */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                <StatCard
-                    title={__('Citas Hoy')}
-                    value={estadisticas.citas_hoy.toString()}
-                    icon={<CalendarDays className="h-5 w-5 text-blue-600" />}
-                    description={__('Total programadas')}
-                />
-                <StatCard
-                    title={__('Confirmadas / Pagadas')}
-                    value={estadisticas.confirmadas.toString()}
-                    icon={<CheckCircle2 className="h-5 w-5 text-emerald-600" />}
-                    description={__('Listas para atención')}
-                />
-                <StatCard
-                    title={__('En Sala de Espera')}
-                    value={estadisticas.en_sala_espera.toString()}
-                    icon={<Users className="h-5 w-5 text-blue-500" />}
-                    description={__('Recepcionados')}
-                />
-                <StatCard
-                    title={__('En Consulta')}
-                    value={estadisticas.en_consulta.toString()}
-                    icon={<Stethoscope className="h-5 w-5 text-purple-600" />}
-                    description={__('Con el profesional')}
-                />
-                <StatCard
-                    title={__('Atendidas')}
-                    value={estadisticas.atendidas.toString()}
-                    icon={<UserCheck className="h-5 w-5 text-orange-600" />}
-                    description={__('Concluidas hoy')}
-                />
-                <StatCard
-                    title={__('Canceladas')}
-                    value={estadisticas.canceladas.toString()}
-                    icon={<AlertCircle className="h-5 w-5 text-rose-600" />}
-                    description={__('Canceladas / Inasistidas')}
-                />
-            </div>
-
-            {/* Estructura Principal de 2 Columnas estilo Referencia (Sidebar Filtros + Calendario) */}
+            {/* Estructura Principal (Sidebar Filtros + Calendario Completo Toggleable) */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                {/* Columna Izquierda: Panel Lateral de Filtros & Mini Calendario */}
-                <div className="lg:col-span-3 space-y-4">
-                    <div className="p-4 bg-card rounded-2xl border shadow-xs space-y-4">
-                        <Button
-                            onClick={() => handleCreateClick()}
-                            className="w-full bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl h-11 font-bold shadow-md"
-                        >
-                            <Plus className="h-4 w-4 mr-2" />
-                            {__('Nueva Cita')}
-                        </Button>
+                {/* Columna Izquierda: Panel Lateral de Filtros & Mini Calendario (Ocultable con Efecto) */}
+                {showSidebar && (
+                    <div className="lg:col-span-3 space-y-4 transition-all duration-300 ease-in-out animate-in fade-in slide-in-from-left-4">
+                        <div className="p-4 bg-card rounded-2xl border shadow-xs space-y-4">
+                            <Button
+                                onClick={() => handleCreateClick()}
+                                className="w-full bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl h-11 font-bold shadow-md"
+                            >
+                                <Plus className="h-4 w-4 mr-2" />
+                                {__('Nueva Cita')}
+                            </Button>
 
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={handleClearFilters}
-                            className="w-full rounded-xl text-xs text-muted-foreground h-9"
-                        >
-                            <X className="h-3.5 w-3.5 mr-1.5" />
-                            {__('Limpiar Filtros')}
-                        </Button>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={handleClearFilters}
+                                className="w-full rounded-xl text-xs text-muted-foreground h-9"
+                            >
+                                <X className="h-3.5 w-3.5 mr-1.5" />
+                                {__('Limpiar Filtros')}
+                            </Button>
 
-                        <div className="space-y-3 pt-2 border-t">
-                            <div className="space-y-1">
-                                <Label className="text-xs font-semibold text-muted-foreground uppercase">{__('Médico')}</Label>
-                                <Select2
-                                    options={medicoFilterOptions}
-                                    value={medicoFilter}
-                                    onChange={setMedicoFilter}
-                                    placeholder={__('Todos los médicos')}
-                                    size="sm"
-                                />
-                            </div>
-
-                            <div className="space-y-1">
-                                <Label className="text-xs font-semibold text-muted-foreground uppercase">{__('Paciente')}</Label>
-                                <div className="relative">
-                                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-                                    <Input
-                                        placeholder={__('Buscar paciente...')}
-                                        value={searchTerm}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="pl-8 h-9 rounded-xl text-xs"
+                            <div className="space-y-3 pt-2 border-t">
+                                <div className="space-y-1">
+                                    <Label className="text-xs font-semibold text-muted-foreground uppercase">{__('Médico')}</Label>
+                                    <Select2
+                                        options={medicoFilterOptions}
+                                        value={medicoFilter}
+                                        onChange={setMedicoFilter}
+                                        placeholder={__('Todos los médicos')}
+                                        size="sm"
                                     />
                                 </div>
+
+                                <div className="space-y-1">
+                                    <Label className="text-xs font-semibold text-muted-foreground uppercase">{__('Paciente')}</Label>
+                                    <div className="relative">
+                                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                                        <Input
+                                            placeholder={__('Buscar paciente...')}
+                                            value={searchTerm}
+                                            onChange={(e) => setSearchTerm(e.target.value)}
+                                            className="pl-8 h-9 rounded-xl text-xs"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Mini Calendario Interactivo */}
+                            <div className="pt-2">
+                                <Label className="text-xs font-semibold text-muted-foreground uppercase mb-2 block">{__('Navegación por Fecha')}</Label>
+                                <MiniCalendar
+                                    selectedDate={currentDate}
+                                    onSelectDate={handleMiniCalendarSelect}
+                                />
                             </div>
                         </div>
-
-                        {/* Mini Calendario Interactivo */}
-                        <div className="pt-2">
-                            <Label className="text-xs font-semibold text-muted-foreground uppercase mb-2 block">{__('Navegación por Fecha')}</Label>
-                            <MiniCalendar
-                                selectedDate={currentDate}
-                                onSelectDate={handleMiniCalendarSelect}
-                            />
-                        </div>
                     </div>
-                </div>
+                )}
 
-                {/* Columna Derecha: Calendario Principal FullCalendar */}
-                <div className="lg:col-span-9 space-y-4">
+                {/* Columna Derecha: Calendario Principal FullCalendar (Ocupa 12 columnas cuando el panel se oculta) */}
+                <div className={cn("space-y-4 transition-all duration-300", showSidebar ? "lg:col-span-9" : "lg:col-span-12")}>
                     {/* Barra Superior del Calendario */}
                     <div className="p-3 bg-card rounded-2xl border shadow-xs flex flex-wrap items-center justify-between gap-4">
-                        {/* Controles de Navegación */}
+                        {/* Controles de Navegación + Toggle Panel */}
                         <div className="flex items-center space-x-2">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setShowSidebar((prev) => !prev)}
+                                className={cn(
+                                    "h-9 px-3 rounded-xl font-semibold text-xs flex items-center gap-1.5 transition-colors border",
+                                    !showSidebar
+                                        ? "bg-emerald-600 text-white border-emerald-600 hover:bg-emerald-700 shadow-xs"
+                                        : "border-border text-foreground hover:bg-muted"
+                                )}
+                                title={showSidebar ? __('Ocultar panel lateral para ganar espacio') : __('Mostrar panel lateral (Nueva Cita & Filtros)')}
+                            >
+                                {showSidebar ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeftOpen className="h-4 w-4" />}
+                                <span>{showSidebar ? __('Ocultar Panel') : __('Mostrar Panel')}</span>
+                            </Button>
+
+                            {!showSidebar && (
+                                <Button
+                                    size="sm"
+                                    onClick={() => handleCreateClick()}
+                                    className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl h-9 px-3 text-xs font-bold shadow-xs flex items-center gap-1.5"
+                                >
+                                    <Plus className="h-4 w-4" />
+                                    <span>{__('Nueva Cita')}</span>
+                                </Button>
+                            )}
+
                             <Button variant="outline" size="sm" onClick={() => handleNavigate('today')} className="h-9 px-3 rounded-xl font-semibold text-xs">
                                 {__('Hoy')}
                             </Button>
@@ -1021,9 +1014,8 @@ export default function Index({
                             </span>
                         </div>
 
-                        {/* Controles de Vista e Intervalo */}
+                        {/* Controles de Vista */}
                         <div className="flex flex-wrap items-center gap-3">
-                            {/* Selector de Vista (Día, Semana, Mes, Lista) */}
                             <div className="flex items-center space-x-1 bg-muted p-1 rounded-xl">
                                 <Button
                                     variant={viewMode === 'day' ? 'default' : 'ghost'}
@@ -1058,22 +1050,6 @@ export default function Index({
                                     {__('Lista')}
                                 </Button>
                             </div>
-
-                            {/* Selector de Intervalo */}
-                            <div className="flex items-center space-x-1.5 border-l pl-3">
-                                <span className="text-xs text-muted-foreground font-semibold">{__('Intervalo:')}</span>
-                                <Select value={slotInterval.toString()} onValueChange={(val) => setSlotInterval(Number(val))}>
-                                    <SelectTrigger className="h-8 rounded-xl text-xs w-[90px] bg-background">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="15">15 min</SelectItem>
-                                        <SelectItem value="20">20 min</SelectItem>
-                                        <SelectItem value="30">30 min</SelectItem>
-                                        <SelectItem value="60">60 min</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
                         </div>
                     </div>
 
@@ -1102,10 +1078,14 @@ export default function Index({
                             selectMirror={true}
                             dayMaxEvents={true}
                             nowIndicator={true}
-                            slotDuration={getSlotDurationString(slotInterval)}
+                            slotDuration="00:30:00"
+                            slotLabelInterval="01:00:00"
                             slotMinTime="07:00:00"
                             slotMaxTime="21:00:00"
                             allDaySlot={false}
+                            slotMinHeight={48}
+                            eventMinHeight={40}
+                            expandRows={true}
                             datesSet={handleDatesSet}
                             eventDrop={handleEventDrop}
                             eventResize={handleEventResize}

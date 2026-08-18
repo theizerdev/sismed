@@ -262,8 +262,18 @@ html[data-sidebar="dark"]:not(.dark) {
     background-color: var(--muted);
 }
 
+.fullcalendar-custom-container .fc-timegrid-slot,
+.fullcalendar-custom-container .fc-timegrid-slot-lane {
+    height: 48px !important;
+    min-height: 48px !important;
+}
+
+.fullcalendar-custom-container .fc-timegrid-event {
+    min-height: 40px !important;
+}
+
 .fullcalendar-custom-container .fc-timegrid-slot-label {
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     font-family: monospace;
     color: var(--muted-foreground);
     font-weight: 600;
