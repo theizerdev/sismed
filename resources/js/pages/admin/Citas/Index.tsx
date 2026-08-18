@@ -182,6 +182,8 @@ interface Paciente {
     tutor_nombre?: string;
     telefono?: string;
     tutor_telefono?: string;
+    fecha_nacimiento?: string;
+    edad?: string;
 }
 
 interface Medico {
@@ -282,12 +284,58 @@ export default function Index({
     const [tipoAtencionFilter, setTipoAtencionFilter] = useState(filters.tipo_atencion_id || 'all');
     const [estadoFilter, setEstadoFilter] = useState(filters.estado || 'all');
     const [viewMode, setViewMode] = useState<'week' | 'day' | 'month' | 'table'>('week');
-    const [showSidebar, setShowSidebar] = useState<boolean>(true);
+    const [showSidebar, setShowSidebar] = useState<boolean>(false);
 
     // ── FullCalendar & Navigation State ───────────────────────────────────────
     const calendarRef = useRef<any>(null);
     const [calendarTitle, setCalendarTitle] = useState('');
     const [currentDate, setCurrentDate] = useState<Date>(new Date());
+
+    // ── Tooltip Hover State ────────────────────────────────────────────────────
+    const [hoveredTooltip, setHoveredTooltip] = useState<{
+        x: number;
+        y: number;
+        cita: Cita;
+    } | null>(null);
+
+    const getEdadPaciente = (paciente?: Paciente) => {
+        if (!paciente) return 'N/A';
+        if (paciente.edad) return paciente.edad;
+        if (!paciente.fecha_nacimiento) return 'No especificada';
+
+        const birthDate = new Date(paciente.fecha_nacimiento);
+        if (isNaN(birthDate.getTime())) return 'No especificada';
+
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        if (age >= 1) {
+            return `${age} ${age === 1 ? 'año' : 'años'}`;
+        }
+        const months = (today.getFullYear() - birthDate.getFullYear()) * 12 + (today.getMonth() - birthDate.getMonth());
+        return `${months > 0 ? months : 0} ${months === 1 ? 'mes' : 'meses'}`;
+    };
+
+    const handleEventMouseEnter = (info: any) => {
+        const rect = info.el.getBoundingClientRect();
+        const citaId = Number(info.event.id);
+        const foundCita = citas.find((c) => c.id === citaId) || info.event.extendedProps.cita;
+
+        if (foundCita) {
+            setHoveredTooltip({
+                x: rect.left + rect.width / 2,
+                y: rect.top,
+                cita: foundCita,
+            });
+        }
+    };
+
+    const handleEventMouseLeave = () => {
+        setHoveredTooltip(null);
+    };
 
     // ── Update Calendar Size when Sidebar Toggles ─────────────────────────────
     useEffect(() => {
@@ -400,6 +448,16 @@ export default function Index({
         const startStr = info.event.startStr;
         const endStr = info.event.endStr || new Date(info.event.start.getTime() + (info.event.extendedProps.duracion_minutos || 30) * 60000).toISOString();
 
+        // Regla de anticipación mínima de 2 horas
+        const newStartMs = new Date(info.event.start).getTime();
+        const minLeadMs = Date.now() + 2 * 60 * 60 * 1000;
+
+        if (newStartMs < minLeadMs) {
+            info.revert();
+            notifyError(__('Las citas deben programarse con un mínimo de 2 horas de anticipación.'));
+            return;
+        }
+
         router.patch(
             `/admin/citas/${citaId}/mover`,
             {
@@ -471,7 +529,7 @@ export default function Index({
     const renderEventContent = (eventInfo: any) => {
         const props = eventInfo.event.extendedProps;
         const isList = eventInfo.view.type.startsWith('list');
-        const isMonth = eventInfo.view.type.startsWith('dayGrid');
+        const bgColor = eventInfo.event.backgroundColor || '#3b82f6';
 
         if (isList) {
             return (
@@ -479,34 +537,25 @@ export default function Index({
                     <span className="font-bold text-xs text-foreground">{eventInfo.timeText}</span>
                     <span className="font-semibold text-xs text-foreground">{props.paciente_nombre}</span>
                     <span className="text-[11px] text-muted-foreground">({props.medico_nombre})</span>
-                    <span className="ml-auto text-[10px] px-2 py-0.5 rounded-full font-bold text-white shadow-xs" style={{ backgroundColor: eventInfo.event.backgroundColor }}>
+                    <span className="ml-auto text-[10px] px-2 py-0.5 rounded-full font-bold text-white shadow-xs" style={{ backgroundColor: bgColor }}>
                         {props.estado_formateado}
                     </span>
                 </div>
             );
         }
 
-        if (isMonth) {
-            return (
-                <div className="px-1.5 py-0.5 w-full text-white font-medium text-[11px] truncate flex items-center gap-1 rounded" style={{ backgroundColor: eventInfo.event.backgroundColor }}>
-                    <span className="font-bold text-[10px]">{eventInfo.timeText}</span>
-                    <span className="truncate text-[10px] font-semibold">{props.paciente_nombre}</span>
-                </div>
-            );
-        }
-
+        // Estilo tarjeta llena con color del estado y texto en blanco brillante 100% visible
         return (
-            <div className="p-1.5 w-full h-full text-white font-medium text-xs overflow-hidden flex flex-col justify-between leading-tight group/fc-event rounded-lg">
-                <div className="bg-black/30 font-bold px-1.5 py-0.5 rounded text-[11px] truncate flex items-center justify-between shadow-xs">
-                    <span className="truncate">{props.paciente_nombre}</span>
-                    {props.link_virtual && <Video className="h-3.5 w-3.5 shrink-0 ml-1 text-blue-200" />}
-                </div>
-                <div className="opacity-95 text-[10px] font-medium truncate my-0.5">
-                    {props.medico_nombre}
-                </div>
-                <div className="text-[9px] font-mono opacity-90 flex items-center justify-between pt-0.5">
+            <div
+                className="px-2 py-1 w-full h-full text-white font-medium text-xs overflow-hidden flex items-center justify-between gap-1.5 rounded-lg shadow-xs transition-all hover:brightness-110 leading-tight"
+                style={{ backgroundColor: bgColor }}
+            >
+                <span className="font-bold text-xs truncate text-white">
+                    {props.paciente_nombre}
+                </span>
+                <div className="flex items-center gap-1 text-[10px] font-mono shrink-0 font-bold bg-black/30 text-white px-1.5 py-0.5 rounded">
                     <span>{eventInfo.timeText}</span>
-                    <span className="capitalize font-extrabold text-[9px] px-1 py-0.2 rounded bg-black/20">{props.estado_formateado}</span>
+                    {props.link_virtual && <Video className="h-3 w-3 text-blue-200" />}
                 </div>
             </div>
         );
@@ -728,6 +777,15 @@ export default function Index({
         e.preventDefault();
         if (!data.fecha_hora_inicio) {
             notifyError(__('Por favor selecciona un turno/horario disponible.'));
+            return;
+        }
+
+        // Regla de anticipación mínima de 2 horas al agendar nueva cita
+        const startMs = new Date(data.fecha_hora_inicio).getTime();
+        const minLeadMs = Date.now() + 2 * 60 * 60 * 1000;
+
+        if (!editingCita && startMs < minLeadMs) {
+            notifyError(__('Las citas deben programarse con un mínimo de 2 horas de anticipación.'));
             return;
         }
 
@@ -1092,6 +1150,9 @@ export default function Index({
                             select={handleDateSelect}
                             dateClick={handleDateClick}
                             eventClick={handleEventClick}
+                            eventMouseEnter={handleEventMouseEnter}
+                            eventMouseLeave={handleEventMouseLeave}
+                            eventDisplay="block"
                             eventContent={renderEventContent}
                             height="auto"
                         />
@@ -1327,8 +1388,8 @@ export default function Index({
                                                             setData('fecha_hora_inicio', slot.inicio);
                                                         }}
                                                         className={`p-2.5 rounded-xl text-xs font-bold border transition-all text-center ${isSelected
-                                                                ? 'bg-primary text-primary-foreground border-primary shadow-md scale-95'
-                                                                : 'bg-background hover:border-primary/50 text-foreground'
+                                                            ? 'bg-primary text-primary-foreground border-primary shadow-md scale-95'
+                                                            : 'bg-background hover:border-primary/50 text-foreground'
                                                             }`}
                                                     >
                                                         {slot.hora_inicio_formateada}
@@ -1638,6 +1699,71 @@ export default function Index({
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
+
+            {/* Tooltip Enriquecido al pasar el Cursor por una Cita */}
+            {hoveredTooltip && (
+                <div
+                    className="fixed z-50 w-80 p-4 bg-popover/95 dark:bg-slate-900/95 backdrop-blur-md text-popover-foreground rounded-2xl border shadow-2xl space-y-3 pointer-events-none transition-all duration-150 animate-in fade-in zoom-in-95"
+                    style={{
+                        left: `${hoveredTooltip.x}px`,
+                        top: `${hoveredTooltip.y - 10}px`,
+                        transform: 'translate(-50%, -100%)',
+                    }}
+                >
+                    {/* Encabezado: Paciente y Estado Badge */}
+                    <div className="flex items-start justify-between gap-2 border-b pb-2.5">
+                        <div className="min-w-0 flex-1">
+                            <span className="font-extrabold text-sm text-foreground flex items-center gap-1.5 truncate">
+                                {hoveredTooltip.cita.paciente?.tipo_paciente === 'animal'
+                                    ? `🐾 ${hoveredTooltip.cita.paciente.nombre_mascota}`
+                                    : `👤 ${hoveredTooltip.cita.paciente?.nombres} ${hoveredTooltip.cita.paciente?.apellidos}`}
+                            </span>
+                            {hoveredTooltip.cita.paciente?.tipo_paciente === 'animal' && (
+                                <span className="text-[11px] text-muted-foreground block truncate">
+                                    Tutor: {hoveredTooltip.cita.paciente.tutor_nombre || 'N/A'}
+                                </span>
+                            )}
+                            <span className="text-[11px] text-indigo-600 dark:text-indigo-400 font-semibold block mt-0.5">
+                                Edad: {getEdadPaciente(hoveredTooltip.cita.paciente)}
+                            </span>
+                        </div>
+                        <Badge className={cn("text-[10px] font-extrabold px-2.5 py-1 rounded-xl shadow-xs shrink-0 border", getBadgeVariant(hoveredTooltip.cita.estado))}>
+                            {hoveredTooltip.cita.estado_formateado}
+                        </Badge>
+                    </div>
+
+                    {/* Detalles: Médico, Especialidad, Horario, Motivo */}
+                    <div className="space-y-2 text-xs">
+                        <div className="flex items-start gap-2 text-foreground font-semibold">
+                            <Stethoscope className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+                            <div className="min-w-0 flex-1">
+                                <span className="truncate block font-bold text-xs">
+                                    Dr(a). {hoveredTooltip.cita.medico?.nombres} {hoveredTooltip.cita.medico?.apellidos}
+                                </span>
+                                <span className="text-[11px] text-emerald-700 dark:text-emerald-400 font-bold block">
+                                    Especialidad: {hoveredTooltip.cita.especialidad?.nombre || 'Medicina General'}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 text-muted-foreground font-mono">
+                            <Clock className="h-4 w-4 text-blue-600 shrink-0" />
+                            <span>
+                                {new Date(hoveredTooltip.cita.fecha_hora_inicio.replace(' ', 'T')).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(hoveredTooltip.cita.fecha_hora_fin.replace(' ', 'T')).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} ({hoveredTooltip.cita.duracion_minutos} min)
+                            </span>
+                        </div>
+
+                        {hoveredTooltip.cita.motivo_consulta && (
+                            <div className="pt-2 border-t text-[11px] text-muted-foreground">
+                                <span className="font-bold text-foreground block mb-0.5">{__('Motivo de consulta:')}</span>
+                                <p className="line-clamp-3 bg-muted/30 p-2 rounded-xl border text-slate-700 dark:text-slate-300 italic">
+                                    "{hoveredTooltip.cita.motivo_consulta}"
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

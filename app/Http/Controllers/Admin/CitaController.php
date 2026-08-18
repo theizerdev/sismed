@@ -137,7 +137,7 @@ class CitaController extends Controller
             'citas' => $citas,
             'eventosCalendario' => $eventosCalendario,
             'medicos' => Medico::select('id', 'nombres', 'apellidos', 'codigo_medico', 'color_agenda', 'especialidad_principal_id')->where('status', true)->get(),
-            'pacientes' => Paciente::select('id', 'codigo_paciente', 'nombres', 'apellidos', 'tipo_paciente', 'nombre_mascota', 'tutor_nombre', 'telefono', 'tutor_telefono')->where('status', true)->get(),
+            'pacientes' => Paciente::select('id', 'codigo_paciente', 'nombres', 'apellidos', 'tipo_paciente', 'nombre_mascota', 'tutor_nombre', 'telefono', 'tutor_telefono', 'fecha_nacimiento')->where('status', true)->get(),
             'especialidades' => Especialidad::select('id', 'nombre')->where('status', true)->get(),
             'tiposAtencion' => TipoAtencion::select('id', 'nombre', 'duracion_estimada_minutos', 'requiere_link_virtual', 'costo_adicional_sugerido', 'modalidad')->where('status', true)->get(),
             'sucursales' => Sucursal::select('id', 'nombre')->get(),
@@ -278,6 +278,7 @@ class CitaController extends Controller
 
         // Si cambia la hora de inicio, verificar límite de cancelación y overbooking
         if (!$cita->fecha_hora_inicio->eq($inicioNuevo)) {
+            $this->citaService->validarAnticipacionMinima($inicioNuevo);
             $this->citaService->validarLimiteCancelacion($cita);
             $this->citaService->validarOverbooking((int) $cita->medico_id, $inicioNuevo, $finNuevo, $cita->id);
         }

@@ -74,8 +74,8 @@ class CitaService
             $slotFin = $slotActual->copy()->addMinutes($duracionMinutos);
             $slotFinConBuffer = $slotFin->copy()->addMinutes($bufferMinutos);
 
-            // Regla A: Anticipación mínima de 2 horas para hoy
-            if ($fecha->isToday() && $slotActual->lt($margenMinimoLead)) {
+            // Regla A: Anticipación mínima de 2 horas (filtra cualquier horario pasado o a menos de 2h)
+            if ($slotActual->lt($margenMinimoLead)) {
                 $slotActual = $slotFinConBuffer;
                 continue;
             }

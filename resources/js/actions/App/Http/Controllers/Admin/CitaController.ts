@@ -390,7 +390,7 @@ move.patch = (args: { cita: number | { id: number } } | [cita: number | { id: nu
     move.form = moveForm
 /**
 * @see \App\Http\Controllers\Admin\CitaController::updateEstado
- * @see app/Http/Controllers/Admin/CitaController.php:294
+ * @see app/Http/Controllers/Admin/CitaController.php:295
  * @route '/admin/citas/{cita}/estado'
  */
 export const updateEstado = (args: { cita: number | { id: number } } | [cita: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -405,7 +405,7 @@ updateEstado.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\CitaController::updateEstado
- * @see app/Http/Controllers/Admin/CitaController.php:294
+ * @see app/Http/Controllers/Admin/CitaController.php:295
  * @route '/admin/citas/{cita}/estado'
  */
 updateEstado.url = (args: { cita: number | { id: number } } | [cita: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -438,7 +438,7 @@ updateEstado.url = (args: { cita: number | { id: number } } | [cita: number | { 
 
 /**
 * @see \App\Http\Controllers\Admin\CitaController::updateEstado
- * @see app/Http/Controllers/Admin/CitaController.php:294
+ * @see app/Http/Controllers/Admin/CitaController.php:295
  * @route '/admin/citas/{cita}/estado'
  */
 updateEstado.patch = (args: { cita: number | { id: number } } | [cita: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -448,7 +448,7 @@ updateEstado.patch = (args: { cita: number | { id: number } } | [cita: number | 
 
     /**
 * @see \App\Http\Controllers\Admin\CitaController::updateEstado
- * @see app/Http/Controllers/Admin/CitaController.php:294
+ * @see app/Http/Controllers/Admin/CitaController.php:295
  * @route '/admin/citas/{cita}/estado'
  */
     const updateEstadoForm = (args: { cita: number | { id: number } } | [cita: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -463,7 +463,7 @@ updateEstado.patch = (args: { cita: number | { id: number } } | [cita: number | 
 
             /**
 * @see \App\Http\Controllers\Admin\CitaController::updateEstado
- * @see app/Http/Controllers/Admin/CitaController.php:294
+ * @see app/Http/Controllers/Admin/CitaController.php:295
  * @route '/admin/citas/{cita}/estado'
  */
         updateEstadoForm.patch = (args: { cita: number | { id: number } } | [cita: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -479,7 +479,7 @@ updateEstado.patch = (args: { cita: number | { id: number } } | [cita: number | 
     updateEstado.form = updateEstadoForm
 /**
 * @see \App\Http\Controllers\Admin\CitaController::destroy
- * @see app/Http/Controllers/Admin/CitaController.php:370
+ * @see app/Http/Controllers/Admin/CitaController.php:371
  * @route '/admin/citas/{cita}'
  */
 export const destroy = (args: { cita: number | { id: number } } | [cita: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -494,7 +494,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\CitaController::destroy
- * @see app/Http/Controllers/Admin/CitaController.php:370
+ * @see app/Http/Controllers/Admin/CitaController.php:371
  * @route '/admin/citas/{cita}'
  */
 destroy.url = (args: { cita: number | { id: number } } | [cita: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -527,7 +527,7 @@ destroy.url = (args: { cita: number | { id: number } } | [cita: number | { id: n
 
 /**
 * @see \App\Http\Controllers\Admin\CitaController::destroy
- * @see app/Http/Controllers/Admin/CitaController.php:370
+ * @see app/Http/Controllers/Admin/CitaController.php:371
  * @route '/admin/citas/{cita}'
  */
 destroy.delete = (args: { cita: number | { id: number } } | [cita: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -537,7 +537,7 @@ destroy.delete = (args: { cita: number | { id: number } } | [cita: number | { id
 
     /**
 * @see \App\Http\Controllers\Admin\CitaController::destroy
- * @see app/Http/Controllers/Admin/CitaController.php:370
+ * @see app/Http/Controllers/Admin/CitaController.php:371
  * @route '/admin/citas/{cita}'
  */
     const destroyForm = (args: { cita: number | { id: number } } | [cita: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -552,7 +552,7 @@ destroy.delete = (args: { cita: number | { id: number } } | [cita: number | { id
 
             /**
 * @see \App\Http\Controllers\Admin\CitaController::destroy
- * @see app/Http/Controllers/Admin/CitaController.php:370
+ * @see app/Http/Controllers/Admin/CitaController.php:371
  * @route '/admin/citas/{cita}'
  */
         destroyForm.delete = (args: { cita: number | { id: number } } | [cita: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -568,7 +568,7 @@ destroy.delete = (args: { cita: number | { id: number } } | [cita: number | { id
     destroy.form = destroyForm
 /**
 * @see \App\Http\Controllers\Admin\CitaController::sendWhatsAppRecordatorio
- * @see app/Http/Controllers/Admin/CitaController.php:378
+ * @see app/Http/Controllers/Admin/CitaController.php:379
  * @route '/admin/citas/{cita}/send-whatsapp-reminder'
  */
 export const sendWhatsAppRecordatorio = (args: { cita: number | { id: number } } | [cita: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -583,7 +583,7 @@ sendWhatsAppRecordatorio.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\CitaController::sendWhatsAppRecordatorio
- * @see app/Http/Controllers/Admin/CitaController.php:378
+ * @see app/Http/Controllers/Admin/CitaController.php:379
  * @route '/admin/citas/{cita}/send-whatsapp-reminder'
  */
 sendWhatsAppRecordatorio.url = (args: { cita: number | { id: number } } | [cita: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -616,7 +616,7 @@ sendWhatsAppRecordatorio.url = (args: { cita: number | { id: number } } | [cita:
 
 /**
 * @see \App\Http\Controllers\Admin\CitaController::sendWhatsAppRecordatorio
- * @see app/Http/Controllers/Admin/CitaController.php:378
+ * @see app/Http/Controllers/Admin/CitaController.php:379
  * @route '/admin/citas/{cita}/send-whatsapp-reminder'
  */
 sendWhatsAppRecordatorio.post = (args: { cita: number | { id: number } } | [cita: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -626,7 +626,7 @@ sendWhatsAppRecordatorio.post = (args: { cita: number | { id: number } } | [cita
 
     /**
 * @see \App\Http\Controllers\Admin\CitaController::sendWhatsAppRecordatorio
- * @see app/Http/Controllers/Admin/CitaController.php:378
+ * @see app/Http/Controllers/Admin/CitaController.php:379
  * @route '/admin/citas/{cita}/send-whatsapp-reminder'
  */
     const sendWhatsAppRecordatorioForm = (args: { cita: number | { id: number } } | [cita: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -636,7 +636,7 @@ sendWhatsAppRecordatorio.post = (args: { cita: number | { id: number } } | [cita
 
             /**
 * @see \App\Http\Controllers\Admin\CitaController::sendWhatsAppRecordatorio
- * @see app/Http/Controllers/Admin/CitaController.php:378
+ * @see app/Http/Controllers/Admin/CitaController.php:379
  * @route '/admin/citas/{cita}/send-whatsapp-reminder'
  */
         sendWhatsAppRecordatorioForm.post = (args: { cita: number | { id: number } } | [cita: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

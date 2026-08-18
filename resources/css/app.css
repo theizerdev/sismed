@@ -280,12 +280,28 @@ html[data-sidebar="dark"]:not(.dark) {
 }
 
 .fullcalendar-custom-container .fc-event {
-    border-radius: 0.75rem !important;
+    border-radius: 0.5rem !important;
     border: none !important;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
     transition: transform 0.15s ease, box-shadow 0.15s ease;
     cursor: pointer;
     overflow: hidden;
+}
+
+.fullcalendar-custom-container .fc-daygrid-event {
+    border-radius: 0.5rem !important;
+    border: none !important;
+    margin-top: 2px !important;
+    margin-bottom: 2px !important;
+    padding: 0 !important;
+}
+
+.fullcalendar-custom-container .fc-daygrid-event-dot {
+    display: none !important;
+}
+
+.fullcalendar-custom-container .fc-daygrid-event .fc-event-main {
+    padding: 0 !important;
 }
 
 .fullcalendar-custom-container .fc-event:hover {
