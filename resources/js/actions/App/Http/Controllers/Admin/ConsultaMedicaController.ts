@@ -528,7 +528,7 @@ export const atencion = {
 
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::store
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:285
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:290
  * @route '/admin/consultas/{cita}/atencion'
  */
 const store705d762b46508d1733977318d2ee5620 = (args: { cita: number | { id: number } } | [cita: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -543,7 +543,7 @@ store705d762b46508d1733977318d2ee5620.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::store
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:285
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:290
  * @route '/admin/consultas/{cita}/atencion'
  */
 store705d762b46508d1733977318d2ee5620.url = (args: { cita: number | { id: number } } | [cita: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -576,7 +576,7 @@ store705d762b46508d1733977318d2ee5620.url = (args: { cita: number | { id: number
 
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::store
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:285
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:290
  * @route '/admin/consultas/{cita}/atencion'
  */
 store705d762b46508d1733977318d2ee5620.post = (args: { cita: number | { id: number } } | [cita: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -586,7 +586,7 @@ store705d762b46508d1733977318d2ee5620.post = (args: { cita: number | { id: numbe
 
     /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::store
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:285
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:290
  * @route '/admin/consultas/{cita}/atencion'
  */
     const store705d762b46508d1733977318d2ee5620Form = (args: { cita: number | { id: number } } | [cita: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -596,7 +596,7 @@ store705d762b46508d1733977318d2ee5620.post = (args: { cita: number | { id: numbe
 
             /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::store
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:285
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:290
  * @route '/admin/consultas/{cita}/atencion'
  */
         store705d762b46508d1733977318d2ee5620Form.post = (args: { cita: number | { id: number } } | [cita: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -607,7 +607,7 @@ store705d762b46508d1733977318d2ee5620.post = (args: { cita: number | { id: numbe
     store705d762b46508d1733977318d2ee5620.form = store705d762b46508d1733977318d2ee5620Form
     /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::store
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:285
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:290
  * @route '/admin/citas/{cita}/atencion'
  */
 const storee02d37f0cd7d5425f8f755653059768f = (args: { cita: number | { id: number } } | [cita: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -622,7 +622,7 @@ storee02d37f0cd7d5425f8f755653059768f.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::store
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:285
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:290
  * @route '/admin/citas/{cita}/atencion'
  */
 storee02d37f0cd7d5425f8f755653059768f.url = (args: { cita: number | { id: number } } | [cita: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -655,7 +655,7 @@ storee02d37f0cd7d5425f8f755653059768f.url = (args: { cita: number | { id: number
 
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::store
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:285
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:290
  * @route '/admin/citas/{cita}/atencion'
  */
 storee02d37f0cd7d5425f8f755653059768f.post = (args: { cita: number | { id: number } } | [cita: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -665,7 +665,7 @@ storee02d37f0cd7d5425f8f755653059768f.post = (args: { cita: number | { id: numbe
 
     /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::store
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:285
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:290
  * @route '/admin/citas/{cita}/atencion'
  */
     const storee02d37f0cd7d5425f8f755653059768fForm = (args: { cita: number | { id: number } } | [cita: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -675,7 +675,7 @@ storee02d37f0cd7d5425f8f755653059768f.post = (args: { cita: number | { id: numbe
 
             /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::store
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:285
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:290
  * @route '/admin/citas/{cita}/atencion'
  */
         storee02d37f0cd7d5425f8f755653059768fForm.post = (args: { cita: number | { id: number } } | [cita: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -697,7 +697,7 @@ export const store = {
 
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::storeDiagnosticoCie10
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:213
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:218
  * @route '/admin/consultas/cie10'
  */
 export const storeDiagnosticoCie10 = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -712,7 +712,7 @@ storeDiagnosticoCie10.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::storeDiagnosticoCie10
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:213
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:218
  * @route '/admin/consultas/cie10'
  */
 storeDiagnosticoCie10.url = (options?: RouteQueryOptions) => {
@@ -721,7 +721,7 @@ storeDiagnosticoCie10.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::storeDiagnosticoCie10
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:213
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:218
  * @route '/admin/consultas/cie10'
  */
 storeDiagnosticoCie10.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -731,7 +731,7 @@ storeDiagnosticoCie10.post = (options?: RouteQueryOptions): RouteDefinition<'pos
 
     /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::storeDiagnosticoCie10
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:213
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:218
  * @route '/admin/consultas/cie10'
  */
     const storeDiagnosticoCie10Form = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -741,7 +741,7 @@ storeDiagnosticoCie10.post = (options?: RouteQueryOptions): RouteDefinition<'pos
 
             /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::storeDiagnosticoCie10
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:213
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:218
  * @route '/admin/consultas/cie10'
  */
         storeDiagnosticoCie10Form.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -752,7 +752,7 @@ storeDiagnosticoCie10.post = (options?: RouteQueryOptions): RouteDefinition<'pos
     storeDiagnosticoCie10.form = storeDiagnosticoCie10Form
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::storeEstudioCatalogo
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:248
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:253
  * @route '/admin/consultas/estudios-catalogo'
  */
 export const storeEstudioCatalogo = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -767,7 +767,7 @@ storeEstudioCatalogo.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::storeEstudioCatalogo
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:248
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:253
  * @route '/admin/consultas/estudios-catalogo'
  */
 storeEstudioCatalogo.url = (options?: RouteQueryOptions) => {
@@ -776,7 +776,7 @@ storeEstudioCatalogo.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::storeEstudioCatalogo
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:248
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:253
  * @route '/admin/consultas/estudios-catalogo'
  */
 storeEstudioCatalogo.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -786,7 +786,7 @@ storeEstudioCatalogo.post = (options?: RouteQueryOptions): RouteDefinition<'post
 
     /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::storeEstudioCatalogo
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:248
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:253
  * @route '/admin/consultas/estudios-catalogo'
  */
     const storeEstudioCatalogoForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -796,7 +796,7 @@ storeEstudioCatalogo.post = (options?: RouteQueryOptions): RouteDefinition<'post
 
             /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::storeEstudioCatalogo
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:248
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:253
  * @route '/admin/consultas/estudios-catalogo'
  */
         storeEstudioCatalogoForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -807,7 +807,7 @@ storeEstudioCatalogo.post = (options?: RouteQueryOptions): RouteDefinition<'post
     storeEstudioCatalogo.form = storeEstudioCatalogoForm
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::imprimirInforme
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:472
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:477
  * @route '/admin/consultas/{consulta}/imprimir/informe'
  */
 export const imprimirInforme = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -822,7 +822,7 @@ imprimirInforme.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::imprimirInforme
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:472
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:477
  * @route '/admin/consultas/{consulta}/imprimir/informe'
  */
 imprimirInforme.url = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -855,7 +855,7 @@ imprimirInforme.url = (args: { consulta: number | { id: number } } | [consulta: 
 
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::imprimirInforme
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:472
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:477
  * @route '/admin/consultas/{consulta}/imprimir/informe'
  */
 imprimirInforme.get = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -864,7 +864,7 @@ imprimirInforme.get = (args: { consulta: number | { id: number } } | [consulta: 
 })
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::imprimirInforme
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:472
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:477
  * @route '/admin/consultas/{consulta}/imprimir/informe'
  */
 imprimirInforme.head = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -874,7 +874,7 @@ imprimirInforme.head = (args: { consulta: number | { id: number } } | [consulta:
 
     /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::imprimirInforme
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:472
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:477
  * @route '/admin/consultas/{consulta}/imprimir/informe'
  */
     const imprimirInformeForm = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -884,7 +884,7 @@ imprimirInforme.head = (args: { consulta: number | { id: number } } | [consulta:
 
             /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::imprimirInforme
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:472
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:477
  * @route '/admin/consultas/{consulta}/imprimir/informe'
  */
         imprimirInformeForm.get = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -893,7 +893,7 @@ imprimirInforme.head = (args: { consulta: number | { id: number } } | [consulta:
         })
             /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::imprimirInforme
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:472
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:477
  * @route '/admin/consultas/{consulta}/imprimir/informe'
  */
         imprimirInformeForm.head = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -909,7 +909,7 @@ imprimirInforme.head = (args: { consulta: number | { id: number } } | [consulta:
     imprimirInforme.form = imprimirInformeForm
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::imprimirReceta
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:533
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:538
  * @route '/admin/consultas/{consulta}/imprimir/receta'
  */
 export const imprimirReceta = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -924,7 +924,7 @@ imprimirReceta.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::imprimirReceta
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:533
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:538
  * @route '/admin/consultas/{consulta}/imprimir/receta'
  */
 imprimirReceta.url = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -957,7 +957,7 @@ imprimirReceta.url = (args: { consulta: number | { id: number } } | [consulta: n
 
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::imprimirReceta
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:533
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:538
  * @route '/admin/consultas/{consulta}/imprimir/receta'
  */
 imprimirReceta.get = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -966,7 +966,7 @@ imprimirReceta.get = (args: { consulta: number | { id: number } } | [consulta: n
 })
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::imprimirReceta
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:533
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:538
  * @route '/admin/consultas/{consulta}/imprimir/receta'
  */
 imprimirReceta.head = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -976,7 +976,7 @@ imprimirReceta.head = (args: { consulta: number | { id: number } } | [consulta: 
 
     /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::imprimirReceta
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:533
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:538
  * @route '/admin/consultas/{consulta}/imprimir/receta'
  */
     const imprimirRecetaForm = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -986,7 +986,7 @@ imprimirReceta.head = (args: { consulta: number | { id: number } } | [consulta: 
 
             /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::imprimirReceta
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:533
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:538
  * @route '/admin/consultas/{consulta}/imprimir/receta'
  */
         imprimirRecetaForm.get = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -995,7 +995,7 @@ imprimirReceta.head = (args: { consulta: number | { id: number } } | [consulta: 
         })
             /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::imprimirReceta
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:533
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:538
  * @route '/admin/consultas/{consulta}/imprimir/receta'
  */
         imprimirRecetaForm.head = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -1011,7 +1011,7 @@ imprimirReceta.head = (args: { consulta: number | { id: number } } | [consulta: 
     imprimirReceta.form = imprimirRecetaForm
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::imprimirEstudios
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:573
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:578
  * @route '/admin/consultas/{consulta}/imprimir/estudios'
  */
 export const imprimirEstudios = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -1026,7 +1026,7 @@ imprimirEstudios.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::imprimirEstudios
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:573
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:578
  * @route '/admin/consultas/{consulta}/imprimir/estudios'
  */
 imprimirEstudios.url = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -1059,7 +1059,7 @@ imprimirEstudios.url = (args: { consulta: number | { id: number } } | [consulta:
 
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::imprimirEstudios
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:573
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:578
  * @route '/admin/consultas/{consulta}/imprimir/estudios'
  */
 imprimirEstudios.get = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -1068,7 +1068,7 @@ imprimirEstudios.get = (args: { consulta: number | { id: number } } | [consulta:
 })
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::imprimirEstudios
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:573
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:578
  * @route '/admin/consultas/{consulta}/imprimir/estudios'
  */
 imprimirEstudios.head = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -1078,7 +1078,7 @@ imprimirEstudios.head = (args: { consulta: number | { id: number } } | [consulta
 
     /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::imprimirEstudios
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:573
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:578
  * @route '/admin/consultas/{consulta}/imprimir/estudios'
  */
     const imprimirEstudiosForm = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -1088,7 +1088,7 @@ imprimirEstudios.head = (args: { consulta: number | { id: number } } | [consulta
 
             /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::imprimirEstudios
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:573
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:578
  * @route '/admin/consultas/{consulta}/imprimir/estudios'
  */
         imprimirEstudiosForm.get = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -1097,7 +1097,7 @@ imprimirEstudios.head = (args: { consulta: number | { id: number } } | [consulta
         })
             /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::imprimirEstudios
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:573
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:578
  * @route '/admin/consultas/{consulta}/imprimir/estudios'
  */
         imprimirEstudiosForm.head = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -1113,7 +1113,7 @@ imprimirEstudios.head = (args: { consulta: number | { id: number } } | [consulta
     imprimirEstudios.form = imprimirEstudiosForm
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::imprimirReposo
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:615
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:620
  * @route '/admin/consultas/{consulta}/imprimir/reposo'
  */
 export const imprimirReposo = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -1128,7 +1128,7 @@ imprimirReposo.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::imprimirReposo
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:615
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:620
  * @route '/admin/consultas/{consulta}/imprimir/reposo'
  */
 imprimirReposo.url = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -1161,7 +1161,7 @@ imprimirReposo.url = (args: { consulta: number | { id: number } } | [consulta: n
 
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::imprimirReposo
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:615
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:620
  * @route '/admin/consultas/{consulta}/imprimir/reposo'
  */
 imprimirReposo.get = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -1170,7 +1170,7 @@ imprimirReposo.get = (args: { consulta: number | { id: number } } | [consulta: n
 })
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::imprimirReposo
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:615
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:620
  * @route '/admin/consultas/{consulta}/imprimir/reposo'
  */
 imprimirReposo.head = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -1180,7 +1180,7 @@ imprimirReposo.head = (args: { consulta: number | { id: number } } | [consulta: 
 
     /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::imprimirReposo
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:615
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:620
  * @route '/admin/consultas/{consulta}/imprimir/reposo'
  */
     const imprimirReposoForm = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -1190,7 +1190,7 @@ imprimirReposo.head = (args: { consulta: number | { id: number } } | [consulta: 
 
             /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::imprimirReposo
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:615
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:620
  * @route '/admin/consultas/{consulta}/imprimir/reposo'
  */
         imprimirReposoForm.get = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -1199,7 +1199,7 @@ imprimirReposo.head = (args: { consulta: number | { id: number } } | [consulta: 
         })
             /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::imprimirReposo
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:615
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:620
  * @route '/admin/consultas/{consulta}/imprimir/reposo'
  */
         imprimirReposoForm.head = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -1215,7 +1215,7 @@ imprimirReposo.head = (args: { consulta: number | { id: number } } | [consulta: 
     imprimirReposo.form = imprimirReposoForm
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::imprimirConstancia
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:657
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:662
  * @route '/admin/consultas/{consulta}/imprimir/constancia'
  */
 export const imprimirConstancia = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -1230,7 +1230,7 @@ imprimirConstancia.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::imprimirConstancia
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:657
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:662
  * @route '/admin/consultas/{consulta}/imprimir/constancia'
  */
 imprimirConstancia.url = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -1263,7 +1263,7 @@ imprimirConstancia.url = (args: { consulta: number | { id: number } } | [consult
 
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::imprimirConstancia
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:657
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:662
  * @route '/admin/consultas/{consulta}/imprimir/constancia'
  */
 imprimirConstancia.get = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -1272,7 +1272,7 @@ imprimirConstancia.get = (args: { consulta: number | { id: number } } | [consult
 })
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::imprimirConstancia
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:657
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:662
  * @route '/admin/consultas/{consulta}/imprimir/constancia'
  */
 imprimirConstancia.head = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -1282,7 +1282,7 @@ imprimirConstancia.head = (args: { consulta: number | { id: number } } | [consul
 
     /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::imprimirConstancia
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:657
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:662
  * @route '/admin/consultas/{consulta}/imprimir/constancia'
  */
     const imprimirConstanciaForm = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -1292,7 +1292,7 @@ imprimirConstancia.head = (args: { consulta: number | { id: number } } | [consul
 
             /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::imprimirConstancia
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:657
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:662
  * @route '/admin/consultas/{consulta}/imprimir/constancia'
  */
         imprimirConstanciaForm.get = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -1301,7 +1301,7 @@ imprimirConstancia.head = (args: { consulta: number | { id: number } } | [consul
         })
             /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::imprimirConstancia
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:657
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:662
  * @route '/admin/consultas/{consulta}/imprimir/constancia'
  */
         imprimirConstanciaForm.head = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

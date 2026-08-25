@@ -132,6 +132,11 @@ class ConsultaMedicaController extends Controller
      */
     public function atencion(Cita $cita)
     {
+        $user = Auth::user();
+        if ($user && $user->hasRole('recepcionista') && !$user->hasRole('medico') && !$user->hasRole('admin') && !$user->hasRole('super-admin')) {
+            return redirect()->route('admin.citas.index')->with('error', 'El rol de recepción no tiene autorización para acceder al Wizard de Atención Médica.');
+        }
+
         // Asegurar que la consulta exista en estado 'en_consultorio'
         $consulta = ConsultaMedica::firstOrCreate(
             ['cita_id' => $cita->id],

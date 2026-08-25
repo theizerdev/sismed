@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { useForm, router } from '@inertiajs/react';
+import { useForm, router, usePage } from '@inertiajs/react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -281,6 +281,25 @@ export default function Index({
     filters,
 }: Props) {
     const __ = (key: string) => key;
+
+    // ── Auth & Role Permissions ───────────────────────────────────────────────
+    const { auth } = usePage().props as any;
+    const user = auth?.user;
+    const isRecepcionista = Boolean(
+        user?.roles?.includes('recepcionista') &&
+        !user?.roles?.includes('medico') &&
+        !user?.roles?.includes('admin') &&
+        !user?.roles?.includes('super-admin')
+    );
+    const canAtenderConsulta = Boolean(user?.can_atender_consulta) || (
+        !isRecepcionista && (
+            user?.is_medico ||
+            user?.roles?.includes('medico') ||
+            user?.permissions?.includes('expedientes.create') ||
+            user?.roles?.includes('admin') ||
+            user?.roles?.includes('super-admin')
+        )
+    );
 
     // ── Local Patients State (for immediate selection upon quick creation) ────
     const [pacientesList, setPacientesList] = useState<Paciente[]>(pacientes);
@@ -1675,16 +1694,18 @@ export default function Index({
 
                             {/* HERO ACTION BUTTON & ACCIONES RÁPIDAS */}
                             <div className="space-y-3 pt-1">
-                                {/* Botón Acción Principal Destacado */}
-                                <Button
-                                    type="button"
-                                    onClick={() => router.get(`/admin/citas/${selectedCita.id}/atencion`)}
-                                    className="w-full h-12 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-extrabold text-xs shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2 transition-all transform active:scale-98"
-                                >
-                                    <Stethoscope className="size-4" />
-                                    {__('ATENDER CONSULTA MÉDICA (WIZARD DE ATENCIÓN)')}
-                                    <ArrowRight className="size-4 ml-1" />
-                                </Button>
+                                {/* Botón Acción Principal Destacado (Exclusivo para Médicos y Personal Clínico) */}
+                                {canAtenderConsulta && (
+                                    <Button
+                                        type="button"
+                                        onClick={() => router.get(`/admin/citas/${selectedCita.id}/atencion`)}
+                                        className="w-full h-12 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-extrabold text-xs shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2 transition-all transform active:scale-98"
+                                    >
+                                        <Stethoscope className="size-4" />
+                                        {__('ATENDER CONSULTA MÉDICA (WIZARD DE ATENCIÓN)')}
+                                        <ArrowRight className="size-4 ml-1" />
+                                    </Button>
+                                )}
 
                                 {/* Barra de Herramientas Secundarias */}
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">

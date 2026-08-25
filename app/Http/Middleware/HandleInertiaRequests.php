@@ -42,6 +42,15 @@ class HandleInertiaRequests extends Middleware
             'name' => config('app.name'),
             'auth' => [
                 'user' => $request->user() ? array_merge($request->user()->toArray(), [
+                    'roles' => $request->user()->getRoleNames()->toArray(),
+                    'is_medico' => $request->user()->hasRole('medico') || \App\Models\Medico::where('user_id', $request->user()->id)->exists(),
+                    'can_atender_consulta' => (
+                        $request->user()->hasRole('medico') ||
+                        \App\Models\Medico::where('user_id', $request->user()->id)->exists() ||
+                        $request->user()->can('expedientes.create') ||
+                        $request->user()->hasRole('admin') ||
+                        $request->user()->hasRole('super-admin')
+                    ) && !$request->user()->hasRole('recepcionista'),
                     'empresa' => $request->user()->empresa ? [
                         'id' => $request->user()->empresa->id,
                         'logo' => $request->user()->empresa->logo,

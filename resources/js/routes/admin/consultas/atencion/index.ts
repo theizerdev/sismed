@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::store
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:285
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:290
  * @route '/admin/consultas/{cita}/atencion'
  */
 export const store = (args: { cita: number | { id: number } } | [cita: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::store
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:285
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:290
  * @route '/admin/consultas/{cita}/atencion'
  */
 store.url = (args: { cita: number | { id: number } } | [cita: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -49,7 +49,7 @@ store.url = (args: { cita: number | { id: number } } | [cita: number | { id: num
 
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::store
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:285
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:290
  * @route '/admin/consultas/{cita}/atencion'
  */
 store.post = (args: { cita: number | { id: number } } | [cita: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -59,7 +59,7 @@ store.post = (args: { cita: number | { id: number } } | [cita: number | { id: nu
 
     /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::store
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:285
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:290
  * @route '/admin/consultas/{cita}/atencion'
  */
     const storeForm = (args: { cita: number | { id: number } } | [cita: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -69,7 +69,7 @@ store.post = (args: { cita: number | { id: number } } | [cita: number | { id: nu
 
             /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::store
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:285
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:290
  * @route '/admin/consultas/{cita}/atencion'
  */
         storeForm.post = (args: { cita: number | { id: number } } | [cita: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
