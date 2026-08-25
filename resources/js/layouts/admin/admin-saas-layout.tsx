@@ -450,6 +450,11 @@ export default function AdminSaasLayout({
                                     href: '/admin/plantillas-preconsulta',
                                     permission: 'citas.view',
                                 },
+                                {
+                                    title: '⚡ Campos por Especialidad',
+                                    href: '/admin/plantillas-consultas',
+                                    permission: 'citas.view',
+                                },
                             ].filter(item => hasPermission(item.permission));
 
                             if (consultasItems.length === 0) return null;
@@ -487,7 +492,7 @@ export default function AdminSaasLayout({
                                 },
                                 {
                                     title: 'Medical Specialties',
-                                    href: `/admin/empresas/${userEmpresaId}/especialidades`,
+                                    href: '/admin/especialidades',
                                     permission: 'especialidades.edit',
                                 },
                                 {

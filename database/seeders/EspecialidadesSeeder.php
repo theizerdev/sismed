@@ -30,14 +30,6 @@ class EspecialidadesSeeder extends Seeder
                         'plantilla' => [
                             ['id' => 'motivo_consulta', 'label' => 'Motivo de Consulta', 'type' => 'textarea', 'required' => true],
                             ['id' => 'enfermedad_actual', 'label' => 'Enfermedad Actual', 'type' => 'textarea', 'required' => true],
-                            ['id' => 'signos_vitales', 'label' => 'Signos Vitales', 'type' => 'grid', 'fields' => [
-                                ['id' => 'presion_arterial', 'label' => 'Presión Arterial (mmHg)', 'type' => 'text'],
-                                ['id' => 'frecuencia_cardiaca', 'label' => 'Frecuencia Cardíaca (bpm)', 'type' => 'number'],
-                                ['id' => 'temperatura', 'label' => 'Temperatura (°C)', 'type' => 'number'],
-                                ['id' => 'peso', 'label' => 'Peso (kg)', 'type' => 'number'],
-                                ['id' => 'estatura', 'label' => 'Estatura (cm)', 'type' => 'number'],
-                                ['id' => 'saturacion_oxigeno', 'label' => 'SpO2 (%)', 'type' => 'number'],
-                            ]],
                             ['id' => 'examen_fisico', 'label' => 'Examen Físico', 'type' => 'textarea'],
                             ['id' => 'diagnostico_cie10', 'label' => 'Diagnóstico (CIE-10)', 'type' => 'text'],
                             ['id' => 'plan_tratamiento', 'label' => 'Plan de Tratamiento y Receta', 'type' => 'textarea'],

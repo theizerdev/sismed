@@ -10,6 +10,7 @@ class PlantillaConsulta extends Model
     protected $table = 'plantillas_consultas';
 
     protected $fillable = [
+        'empresa_id',
         'especialidad_id',
         'nombre',
         'descripcion',
@@ -25,6 +26,11 @@ class PlantillaConsulta extends Model
             'es_sistema' => 'boolean',
             'status' => 'boolean',
         ];
+    }
+
+    public function empresa(): BelongsTo
+    {
+        return $this->belongsTo(Empresa::class, 'empresa_id');
     }
 
     public function especialidad(): BelongsTo

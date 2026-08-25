@@ -2,14 +2,92 @@ import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFo
 /**
 * @see \App\Http\Controllers\Admin\EmpresaEspecialidadController::edit
  * @see app/Http/Controllers/Admin/EmpresaEspecialidadController.php:18
- * @route '/admin/empresas/{empresa}/especialidades'
+ * @route '/admin/especialidades'
  */
-export const edit = (args: { empresa: number | { id: number } } | [empresa: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: edit.url(args, options),
+const edit33428d84926a1bb41ad5a5eefad588c7 = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: edit33428d84926a1bb41ad5a5eefad588c7.url(options),
     method: 'get',
 })
 
-edit.definition = {
+edit33428d84926a1bb41ad5a5eefad588c7.definition = {
+    methods: ["get","head"],
+    url: '/admin/especialidades',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\Admin\EmpresaEspecialidadController::edit
+ * @see app/Http/Controllers/Admin/EmpresaEspecialidadController.php:18
+ * @route '/admin/especialidades'
+ */
+edit33428d84926a1bb41ad5a5eefad588c7.url = (options?: RouteQueryOptions) => {
+    return edit33428d84926a1bb41ad5a5eefad588c7.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\Admin\EmpresaEspecialidadController::edit
+ * @see app/Http/Controllers/Admin/EmpresaEspecialidadController.php:18
+ * @route '/admin/especialidades'
+ */
+edit33428d84926a1bb41ad5a5eefad588c7.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: edit33428d84926a1bb41ad5a5eefad588c7.url(options),
+    method: 'get',
+})
+/**
+* @see \App\Http\Controllers\Admin\EmpresaEspecialidadController::edit
+ * @see app/Http/Controllers/Admin/EmpresaEspecialidadController.php:18
+ * @route '/admin/especialidades'
+ */
+edit33428d84926a1bb41ad5a5eefad588c7.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: edit33428d84926a1bb41ad5a5eefad588c7.url(options),
+    method: 'head',
+})
+
+    /**
+* @see \App\Http\Controllers\Admin\EmpresaEspecialidadController::edit
+ * @see app/Http/Controllers/Admin/EmpresaEspecialidadController.php:18
+ * @route '/admin/especialidades'
+ */
+    const edit33428d84926a1bb41ad5a5eefad588c7Form = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: edit33428d84926a1bb41ad5a5eefad588c7.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\Admin\EmpresaEspecialidadController::edit
+ * @see app/Http/Controllers/Admin/EmpresaEspecialidadController.php:18
+ * @route '/admin/especialidades'
+ */
+        edit33428d84926a1bb41ad5a5eefad588c7Form.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: edit33428d84926a1bb41ad5a5eefad588c7.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\Admin\EmpresaEspecialidadController::edit
+ * @see app/Http/Controllers/Admin/EmpresaEspecialidadController.php:18
+ * @route '/admin/especialidades'
+ */
+        edit33428d84926a1bb41ad5a5eefad588c7Form.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: edit33428d84926a1bb41ad5a5eefad588c7.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    edit33428d84926a1bb41ad5a5eefad588c7.form = edit33428d84926a1bb41ad5a5eefad588c7Form
+    /**
+* @see \App\Http\Controllers\Admin\EmpresaEspecialidadController::edit
+ * @see app/Http/Controllers/Admin/EmpresaEspecialidadController.php:18
+ * @route '/admin/empresas/{empresa}/especialidades'
+ */
+const edit953cab207da047e1239c7434271f8369 = (args: { empresa: number | { id: number } } | [empresa: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: edit953cab207da047e1239c7434271f8369.url(args, options),
+    method: 'get',
+})
+
+edit953cab207da047e1239c7434271f8369.definition = {
     methods: ["get","head"],
     url: '/admin/empresas/{empresa}/especialidades',
 } satisfies RouteDefinition<["get","head"]>
@@ -19,7 +97,7 @@ edit.definition = {
  * @see app/Http/Controllers/Admin/EmpresaEspecialidadController.php:18
  * @route '/admin/empresas/{empresa}/especialidades'
  */
-edit.url = (args: { empresa: number | { id: number } } | [empresa: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+edit953cab207da047e1239c7434271f8369.url = (args: { empresa: number | { id: number } } | [empresa: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { empresa: args }
     }
@@ -42,7 +120,7 @@ edit.url = (args: { empresa: number | { id: number } } | [empresa: number | { id
                 : args.empresa,
                 }
 
-    return edit.definition.url
+    return edit953cab207da047e1239c7434271f8369.definition.url
             .replace('{empresa}', parsedArgs.empresa.toString())
             .replace(/\/+$/, '') + queryParams(options)
 }
@@ -52,8 +130,8 @@ edit.url = (args: { empresa: number | { id: number } } | [empresa: number | { id
  * @see app/Http/Controllers/Admin/EmpresaEspecialidadController.php:18
  * @route '/admin/empresas/{empresa}/especialidades'
  */
-edit.get = (args: { empresa: number | { id: number } } | [empresa: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: edit.url(args, options),
+edit953cab207da047e1239c7434271f8369.get = (args: { empresa: number | { id: number } } | [empresa: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: edit953cab207da047e1239c7434271f8369.url(args, options),
     method: 'get',
 })
 /**
@@ -61,8 +139,8 @@ edit.get = (args: { empresa: number | { id: number } } | [empresa: number | { id
  * @see app/Http/Controllers/Admin/EmpresaEspecialidadController.php:18
  * @route '/admin/empresas/{empresa}/especialidades'
  */
-edit.head = (args: { empresa: number | { id: number } } | [empresa: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: edit.url(args, options),
+edit953cab207da047e1239c7434271f8369.head = (args: { empresa: number | { id: number } } | [empresa: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: edit953cab207da047e1239c7434271f8369.url(args, options),
     method: 'head',
 })
 
@@ -71,8 +149,8 @@ edit.head = (args: { empresa: number | { id: number } } | [empresa: number | { i
  * @see app/Http/Controllers/Admin/EmpresaEspecialidadController.php:18
  * @route '/admin/empresas/{empresa}/especialidades'
  */
-    const editForm = (args: { empresa: number | { id: number } } | [empresa: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: edit.url(args, options),
+    const edit953cab207da047e1239c7434271f8369Form = (args: { empresa: number | { id: number } } | [empresa: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: edit953cab207da047e1239c7434271f8369.url(args, options),
         method: 'get',
     })
 
@@ -81,8 +159,8 @@ edit.head = (args: { empresa: number | { id: number } } | [empresa: number | { i
  * @see app/Http/Controllers/Admin/EmpresaEspecialidadController.php:18
  * @route '/admin/empresas/{empresa}/especialidades'
  */
-        editForm.get = (args: { empresa: number | { id: number } } | [empresa: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: edit.url(args, options),
+        edit953cab207da047e1239c7434271f8369Form.get = (args: { empresa: number | { id: number } } | [empresa: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: edit953cab207da047e1239c7434271f8369.url(args, options),
             method: 'get',
         })
             /**
@@ -90,8 +168,8 @@ edit.head = (args: { empresa: number | { id: number } } | [empresa: number | { i
  * @see app/Http/Controllers/Admin/EmpresaEspecialidadController.php:18
  * @route '/admin/empresas/{empresa}/especialidades'
  */
-        editForm.head = (args: { empresa: number | { id: number } } | [empresa: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: edit.url(args, {
+        edit953cab207da047e1239c7434271f8369Form.head = (args: { empresa: number | { id: number } } | [empresa: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: edit953cab207da047e1239c7434271f8369.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
                             ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -100,18 +178,94 @@ edit.head = (args: { empresa: number | { id: number } } | [empresa: number | { i
             method: 'get',
         })
     
-    edit.form = editForm
+    edit953cab207da047e1239c7434271f8369.form = edit953cab207da047e1239c7434271f8369Form
+
 /**
+* Multiple routes resolve to \App\Http\Controllers\Admin\EmpresaEspecialidadController::edit, so this export is a
+* dictionary keyed by URI rather than a callable. Call a specific route with `edit['<uri>'](...)`,
+* or import the route by name from your generated `routes/` directory.
+*/
+export const edit = {
+    '/admin/especialidades': edit33428d84926a1bb41ad5a5eefad588c7,
+    '/admin/empresas/{empresa}/especialidades': edit953cab207da047e1239c7434271f8369,
+}
+
+/**
+* @see \App\Http\Controllers\Admin\EmpresaEspecialidadController::update
+ * @see app/Http/Controllers/Admin/EmpresaEspecialidadController.php:53
+ * @route '/admin/especialidades'
+ */
+const update33428d84926a1bb41ad5a5eefad588c7 = (options?: RouteQueryOptions): RouteDefinition<'put'> => ({
+    url: update33428d84926a1bb41ad5a5eefad588c7.url(options),
+    method: 'put',
+})
+
+update33428d84926a1bb41ad5a5eefad588c7.definition = {
+    methods: ["put"],
+    url: '/admin/especialidades',
+} satisfies RouteDefinition<["put"]>
+
+/**
+* @see \App\Http\Controllers\Admin\EmpresaEspecialidadController::update
+ * @see app/Http/Controllers/Admin/EmpresaEspecialidadController.php:53
+ * @route '/admin/especialidades'
+ */
+update33428d84926a1bb41ad5a5eefad588c7.url = (options?: RouteQueryOptions) => {
+    return update33428d84926a1bb41ad5a5eefad588c7.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\Admin\EmpresaEspecialidadController::update
+ * @see app/Http/Controllers/Admin/EmpresaEspecialidadController.php:53
+ * @route '/admin/especialidades'
+ */
+update33428d84926a1bb41ad5a5eefad588c7.put = (options?: RouteQueryOptions): RouteDefinition<'put'> => ({
+    url: update33428d84926a1bb41ad5a5eefad588c7.url(options),
+    method: 'put',
+})
+
+    /**
+* @see \App\Http\Controllers\Admin\EmpresaEspecialidadController::update
+ * @see app/Http/Controllers/Admin/EmpresaEspecialidadController.php:53
+ * @route '/admin/especialidades'
+ */
+    const update33428d84926a1bb41ad5a5eefad588c7Form = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        action: update33428d84926a1bb41ad5a5eefad588c7.url({
+                    [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                        _method: 'PUT',
+                        ...(options?.query ?? options?.mergeQuery ?? {}),
+                    }
+                }),
+        method: 'post',
+    })
+
+            /**
+* @see \App\Http\Controllers\Admin\EmpresaEspecialidadController::update
+ * @see app/Http/Controllers/Admin/EmpresaEspecialidadController.php:53
+ * @route '/admin/especialidades'
+ */
+        update33428d84926a1bb41ad5a5eefad588c7Form.put = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+            action: update33428d84926a1bb41ad5a5eefad588c7.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'PUT',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'post',
+        })
+    
+    update33428d84926a1bb41ad5a5eefad588c7.form = update33428d84926a1bb41ad5a5eefad588c7Form
+    /**
 * @see \App\Http\Controllers\Admin\EmpresaEspecialidadController::update
  * @see app/Http/Controllers/Admin/EmpresaEspecialidadController.php:53
  * @route '/admin/empresas/{empresa}/especialidades'
  */
-export const update = (args: { empresa: number | { id: number } } | [empresa: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
-    url: update.url(args, options),
+const update953cab207da047e1239c7434271f8369 = (args: { empresa: number | { id: number } } | [empresa: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
+    url: update953cab207da047e1239c7434271f8369.url(args, options),
     method: 'put',
 })
 
-update.definition = {
+update953cab207da047e1239c7434271f8369.definition = {
     methods: ["put"],
     url: '/admin/empresas/{empresa}/especialidades',
 } satisfies RouteDefinition<["put"]>
@@ -121,7 +275,7 @@ update.definition = {
  * @see app/Http/Controllers/Admin/EmpresaEspecialidadController.php:53
  * @route '/admin/empresas/{empresa}/especialidades'
  */
-update.url = (args: { empresa: number | { id: number } } | [empresa: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+update953cab207da047e1239c7434271f8369.url = (args: { empresa: number | { id: number } } | [empresa: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { empresa: args }
     }
@@ -144,7 +298,7 @@ update.url = (args: { empresa: number | { id: number } } | [empresa: number | { 
                 : args.empresa,
                 }
 
-    return update.definition.url
+    return update953cab207da047e1239c7434271f8369.definition.url
             .replace('{empresa}', parsedArgs.empresa.toString())
             .replace(/\/+$/, '') + queryParams(options)
 }
@@ -154,8 +308,8 @@ update.url = (args: { empresa: number | { id: number } } | [empresa: number | { 
  * @see app/Http/Controllers/Admin/EmpresaEspecialidadController.php:53
  * @route '/admin/empresas/{empresa}/especialidades'
  */
-update.put = (args: { empresa: number | { id: number } } | [empresa: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
-    url: update.url(args, options),
+update953cab207da047e1239c7434271f8369.put = (args: { empresa: number | { id: number } } | [empresa: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
+    url: update953cab207da047e1239c7434271f8369.url(args, options),
     method: 'put',
 })
 
@@ -164,8 +318,8 @@ update.put = (args: { empresa: number | { id: number } } | [empresa: number | { 
  * @see app/Http/Controllers/Admin/EmpresaEspecialidadController.php:53
  * @route '/admin/empresas/{empresa}/especialidades'
  */
-    const updateForm = (args: { empresa: number | { id: number } } | [empresa: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-        action: update.url(args, {
+    const update953cab207da047e1239c7434271f8369Form = (args: { empresa: number | { id: number } } | [empresa: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        action: update953cab207da047e1239c7434271f8369.url(args, {
                     [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                         _method: 'PUT',
                         ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -179,8 +333,8 @@ update.put = (args: { empresa: number | { id: number } } | [empresa: number | { 
  * @see app/Http/Controllers/Admin/EmpresaEspecialidadController.php:53
  * @route '/admin/empresas/{empresa}/especialidades'
  */
-        updateForm.put = (args: { empresa: number | { id: number } } | [empresa: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: update.url(args, {
+        update953cab207da047e1239c7434271f8369Form.put = (args: { empresa: number | { id: number } } | [empresa: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+            action: update953cab207da047e1239c7434271f8369.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'PUT',
                             ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -189,7 +343,18 @@ update.put = (args: { empresa: number | { id: number } } | [empresa: number | { 
             method: 'post',
         })
     
-    update.form = updateForm
+    update953cab207da047e1239c7434271f8369.form = update953cab207da047e1239c7434271f8369Form
+
+/**
+* Multiple routes resolve to \App\Http\Controllers\Admin\EmpresaEspecialidadController::update, so this export is a
+* dictionary keyed by URI rather than a callable. Call a specific route with `update['<uri>'](...)`,
+* or import the route by name from your generated `routes/` directory.
+*/
+export const update = {
+    '/admin/especialidades': update33428d84926a1bb41ad5a5eefad588c7,
+    '/admin/empresas/{empresa}/especialidades': update953cab207da047e1239c7434271f8369,
+}
+
 const EmpresaEspecialidadController = { edit, update }
 
 export default EmpresaEspecialidadController

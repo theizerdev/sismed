@@ -5,6 +5,7 @@ import ConsultaMedicaController from './ConsultaMedicaController'
 import DbMonitoringController from './DbMonitoringController'
 import EmpresaController from './EmpresaController'
 import EmpresaEspecialidadController from './EmpresaEspecialidadController'
+import PlantillaConsultaController from './PlantillaConsultaController'
 import IntegrationController from './IntegrationController'
 import LogMonitoringController from './LogMonitoringController'
 import MedicoController from './MedicoController'
@@ -26,6 +27,7 @@ ConsultaMedicaController: Object.assign(ConsultaMedicaController, ConsultaMedica
 DbMonitoringController: Object.assign(DbMonitoringController, DbMonitoringController),
 EmpresaController: Object.assign(EmpresaController, EmpresaController),
 EmpresaEspecialidadController: Object.assign(EmpresaEspecialidadController, EmpresaEspecialidadController),
+PlantillaConsultaController: Object.assign(PlantillaConsultaController, PlantillaConsultaController),
 IntegrationController: Object.assign(IntegrationController, IntegrationController),
 LogMonitoringController: Object.assign(LogMonitoringController, LogMonitoringController),
 MedicoController: Object.assign(MedicoController, MedicoController),

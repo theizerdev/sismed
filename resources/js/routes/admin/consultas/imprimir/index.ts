@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::informe
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:453
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:472
  * @route '/admin/consultas/{consulta}/imprimir/informe'
  */
 export const informe = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ informe.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::informe
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:453
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:472
  * @route '/admin/consultas/{consulta}/imprimir/informe'
  */
 informe.url = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -49,7 +49,7 @@ informe.url = (args: { consulta: number | { id: number } } | [consulta: number |
 
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::informe
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:453
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:472
  * @route '/admin/consultas/{consulta}/imprimir/informe'
  */
 informe.get = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -58,7 +58,7 @@ informe.get = (args: { consulta: number | { id: number } } | [consulta: number |
 })
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::informe
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:453
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:472
  * @route '/admin/consultas/{consulta}/imprimir/informe'
  */
 informe.head = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -68,7 +68,7 @@ informe.head = (args: { consulta: number | { id: number } } | [consulta: number 
 
     /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::informe
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:453
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:472
  * @route '/admin/consultas/{consulta}/imprimir/informe'
  */
     const informeForm = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -78,7 +78,7 @@ informe.head = (args: { consulta: number | { id: number } } | [consulta: number 
 
             /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::informe
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:453
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:472
  * @route '/admin/consultas/{consulta}/imprimir/informe'
  */
         informeForm.get = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -87,7 +87,7 @@ informe.head = (args: { consulta: number | { id: number } } | [consulta: number 
         })
             /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::informe
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:453
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:472
  * @route '/admin/consultas/{consulta}/imprimir/informe'
  */
         informeForm.head = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -103,7 +103,7 @@ informe.head = (args: { consulta: number | { id: number } } | [consulta: number 
     informe.form = informeForm
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::receta
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:514
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:533
  * @route '/admin/consultas/{consulta}/imprimir/receta'
  */
 export const receta = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -118,7 +118,7 @@ receta.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::receta
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:514
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:533
  * @route '/admin/consultas/{consulta}/imprimir/receta'
  */
 receta.url = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -151,7 +151,7 @@ receta.url = (args: { consulta: number | { id: number } } | [consulta: number | 
 
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::receta
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:514
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:533
  * @route '/admin/consultas/{consulta}/imprimir/receta'
  */
 receta.get = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -160,7 +160,7 @@ receta.get = (args: { consulta: number | { id: number } } | [consulta: number | 
 })
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::receta
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:514
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:533
  * @route '/admin/consultas/{consulta}/imprimir/receta'
  */
 receta.head = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -170,7 +170,7 @@ receta.head = (args: { consulta: number | { id: number } } | [consulta: number |
 
     /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::receta
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:514
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:533
  * @route '/admin/consultas/{consulta}/imprimir/receta'
  */
     const recetaForm = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -180,7 +180,7 @@ receta.head = (args: { consulta: number | { id: number } } | [consulta: number |
 
             /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::receta
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:514
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:533
  * @route '/admin/consultas/{consulta}/imprimir/receta'
  */
         recetaForm.get = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -189,7 +189,7 @@ receta.head = (args: { consulta: number | { id: number } } | [consulta: number |
         })
             /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::receta
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:514
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:533
  * @route '/admin/consultas/{consulta}/imprimir/receta'
  */
         recetaForm.head = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -205,7 +205,7 @@ receta.head = (args: { consulta: number | { id: number } } | [consulta: number |
     receta.form = recetaForm
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::estudios
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:554
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:573
  * @route '/admin/consultas/{consulta}/imprimir/estudios'
  */
 export const estudios = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -220,7 +220,7 @@ estudios.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::estudios
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:554
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:573
  * @route '/admin/consultas/{consulta}/imprimir/estudios'
  */
 estudios.url = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -253,7 +253,7 @@ estudios.url = (args: { consulta: number | { id: number } } | [consulta: number 
 
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::estudios
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:554
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:573
  * @route '/admin/consultas/{consulta}/imprimir/estudios'
  */
 estudios.get = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -262,7 +262,7 @@ estudios.get = (args: { consulta: number | { id: number } } | [consulta: number 
 })
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::estudios
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:554
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:573
  * @route '/admin/consultas/{consulta}/imprimir/estudios'
  */
 estudios.head = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -272,7 +272,7 @@ estudios.head = (args: { consulta: number | { id: number } } | [consulta: number
 
     /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::estudios
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:554
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:573
  * @route '/admin/consultas/{consulta}/imprimir/estudios'
  */
     const estudiosForm = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -282,7 +282,7 @@ estudios.head = (args: { consulta: number | { id: number } } | [consulta: number
 
             /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::estudios
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:554
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:573
  * @route '/admin/consultas/{consulta}/imprimir/estudios'
  */
         estudiosForm.get = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -291,7 +291,7 @@ estudios.head = (args: { consulta: number | { id: number } } | [consulta: number
         })
             /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::estudios
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:554
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:573
  * @route '/admin/consultas/{consulta}/imprimir/estudios'
  */
         estudiosForm.head = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -307,7 +307,7 @@ estudios.head = (args: { consulta: number | { id: number } } | [consulta: number
     estudios.form = estudiosForm
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::reposo
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:596
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:615
  * @route '/admin/consultas/{consulta}/imprimir/reposo'
  */
 export const reposo = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -322,7 +322,7 @@ reposo.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::reposo
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:596
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:615
  * @route '/admin/consultas/{consulta}/imprimir/reposo'
  */
 reposo.url = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -355,7 +355,7 @@ reposo.url = (args: { consulta: number | { id: number } } | [consulta: number | 
 
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::reposo
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:596
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:615
  * @route '/admin/consultas/{consulta}/imprimir/reposo'
  */
 reposo.get = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -364,7 +364,7 @@ reposo.get = (args: { consulta: number | { id: number } } | [consulta: number | 
 })
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::reposo
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:596
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:615
  * @route '/admin/consultas/{consulta}/imprimir/reposo'
  */
 reposo.head = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -374,7 +374,7 @@ reposo.head = (args: { consulta: number | { id: number } } | [consulta: number |
 
     /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::reposo
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:596
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:615
  * @route '/admin/consultas/{consulta}/imprimir/reposo'
  */
     const reposoForm = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -384,7 +384,7 @@ reposo.head = (args: { consulta: number | { id: number } } | [consulta: number |
 
             /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::reposo
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:596
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:615
  * @route '/admin/consultas/{consulta}/imprimir/reposo'
  */
         reposoForm.get = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -393,7 +393,7 @@ reposo.head = (args: { consulta: number | { id: number } } | [consulta: number |
         })
             /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::reposo
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:596
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:615
  * @route '/admin/consultas/{consulta}/imprimir/reposo'
  */
         reposoForm.head = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -409,7 +409,7 @@ reposo.head = (args: { consulta: number | { id: number } } | [consulta: number |
     reposo.form = reposoForm
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::constancia
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:638
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:657
  * @route '/admin/consultas/{consulta}/imprimir/constancia'
  */
 export const constancia = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -424,7 +424,7 @@ constancia.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::constancia
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:638
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:657
  * @route '/admin/consultas/{consulta}/imprimir/constancia'
  */
 constancia.url = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -457,7 +457,7 @@ constancia.url = (args: { consulta: number | { id: number } } | [consulta: numbe
 
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::constancia
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:638
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:657
  * @route '/admin/consultas/{consulta}/imprimir/constancia'
  */
 constancia.get = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -466,7 +466,7 @@ constancia.get = (args: { consulta: number | { id: number } } | [consulta: numbe
 })
 /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::constancia
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:638
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:657
  * @route '/admin/consultas/{consulta}/imprimir/constancia'
  */
 constancia.head = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -476,7 +476,7 @@ constancia.head = (args: { consulta: number | { id: number } } | [consulta: numb
 
     /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::constancia
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:638
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:657
  * @route '/admin/consultas/{consulta}/imprimir/constancia'
  */
     const constanciaForm = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -486,7 +486,7 @@ constancia.head = (args: { consulta: number | { id: number } } | [consulta: numb
 
             /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::constancia
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:638
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:657
  * @route '/admin/consultas/{consulta}/imprimir/constancia'
  */
         constanciaForm.get = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -495,7 +495,7 @@ constancia.head = (args: { consulta: number | { id: number } } | [consulta: numb
         })
             /**
 * @see \App\Http\Controllers\Admin\ConsultaMedicaController::constancia
- * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:638
+ * @see app/Http/Controllers/Admin/ConsultaMedicaController.php:657
  * @route '/admin/consultas/{consulta}/imprimir/constancia'
  */
         constanciaForm.head = (args: { consulta: number | { id: number } } | [consulta: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

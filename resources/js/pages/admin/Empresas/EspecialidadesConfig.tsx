@@ -19,6 +19,7 @@ import {
     Layers,
     Info,
     X,
+    Sliders,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import React, { useState, useEffect, useMemo } from 'react';
@@ -187,7 +188,7 @@ export default function EspecialidadesConfig({
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        put(`/admin/empresas/${empresa.id}/especialidades`, {
+        put('/admin/especialidades', {
             preserveScroll: true,
             onSuccess: () => {
                 toast.success('Configuración adaptativa guardada con éxito.');
@@ -216,9 +217,8 @@ export default function EspecialidadesConfig({
     };
 
     const breadcrumbs = [
-        { title: 'Empresas', href: '/admin/empresas' },
-        { title: empresa.razon_social, href: `/admin/empresas/${empresa.id}/especialidades` },
-        { title: 'Configuración Adaptativa de Especialidades', href: '#' },
+        { title: 'Configuración', href: '#' },
+        { title: 'Especialidades Médicas', href: '/admin/especialidades' },
     ];
 
     return (
@@ -232,7 +232,15 @@ export default function EspecialidadesConfig({
                     title="Configuración Adaptativa de Rama Médica y Especialidades"
                     description={`Personaliza el ecosistema clínico de ${empresa.razon_social}. El sistema adaptará automáticamente los formularios, expedientes, odontogramas y recetas según las especialidades activas.`}
                     icon={<Sparkles className="size-6 text-white" />}
-                />
+                >
+                    <a
+                        href="/admin/plantillas-consultas"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-black/30 hover:bg-black/40 text-white font-bold text-xs rounded-xl backdrop-blur-md transition-all shadow-sm border border-white/20 hover:scale-105"
+                    >
+                        <Sliders className="size-4" />
+                        Configurador de Campos por Especialidad
+                    </a>
+                </ModuleHeader>
 
                 {/* Tarjetas de Resumen Superior */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -480,16 +488,28 @@ export default function EspecialidadesConfig({
                                                                 </div>
 
                                                                 {/* Footer con Botones de Acción */}
-                                                                <div className="mt-5 pt-3 border-t border-border/50 flex items-center justify-between gap-2">
-                                                                    <a
-                                                                        href={`/admin/plantillas-preconsulta?especialidad_id=${esp.id}`}
-                                                                        onClick={(e) => e.stopPropagation()}
-                                                                        className="inline-flex items-center gap-1.5 h-8 text-xs px-3 text-emerald-700 dark:text-emerald-400 font-bold bg-emerald-500/15 hover:bg-emerald-500/25 rounded-xl transition-all border border-emerald-500/30 shadow-xs hover:scale-105"
-                                                                        title="Configurar Cuestionario de Pre-Consulta"
-                                                                    >
-                                                                        <FileText className="size-3.5 text-emerald-600" />
-                                                                        Pre-Consulta
-                                                                    </a>
+                                                                <div className="mt-5 pt-3 border-t border-border/50 flex flex-wrap items-center justify-between gap-2">
+                                                                    <div className="flex items-center gap-1.5">
+                                                                        <a
+                                                                            href={`/admin/plantillas-consultas?especialidad_id=${esp.id}`}
+                                                                            onClick={(e) => e.stopPropagation()}
+                                                                            className="inline-flex items-center gap-1.5 h-8 text-xs px-2.5 text-primary font-bold bg-primary/10 hover:bg-primary/20 rounded-xl transition-all border border-primary/30 shadow-2xs hover:scale-105"
+                                                                            title="Configurar Campos Clínicos de Consulta"
+                                                                        >
+                                                                            <Sliders className="size-3.5 text-primary" />
+                                                                            Campos Consulta
+                                                                        </a>
+
+                                                                        <a
+                                                                            href={`/admin/plantillas-preconsulta?especialidad_id=${esp.id}`}
+                                                                            onClick={(e) => e.stopPropagation()}
+                                                                            className="inline-flex items-center gap-1.5 h-8 text-xs px-2.5 text-emerald-700 dark:text-emerald-400 font-bold bg-emerald-500/15 hover:bg-emerald-500/25 rounded-xl transition-all border border-emerald-500/30 shadow-xs hover:scale-105"
+                                                                            title="Configurar Cuestionario de Pre-Consulta"
+                                                                        >
+                                                                            <FileText className="size-3.5 text-emerald-600" />
+                                                                            Pre-Consulta
+                                                                        </a>
+                                                                    </div>
 
                                                                     <div className="flex items-center gap-1.5">
                                                                         {esp.plantillas && esp.plantillas.length > 0 && (
@@ -497,7 +517,7 @@ export default function EspecialidadesConfig({
                                                                                 type="button"
                                                                                 size="sm"
                                                                                 variant="ghost"
-                                                                                className="h-8 text-xs px-2.5 text-muted-foreground hover:text-foreground gap-1 rounded-xl"
+                                                                                className="h-8 text-xs px-2 text-muted-foreground hover:text-foreground gap-1 rounded-xl"
                                                                                 onClick={(e) => {
                                                                                     e.stopPropagation();
                                                                                     setPreviewEspecialidad(esp);
@@ -566,7 +586,7 @@ export default function EspecialidadesConfig({
                                     <div className="p-3 rounded-xl bg-muted/40 border border-border/50">
                                         <p className="font-semibold text-xs text-foreground">{p.nombre}</p>
                                         {p.descripcion && (
-                                            <p className="text-[11px] text-muted-foreground mt-0.5">{p.descripcion}</p>
+                                             <p className="text-[11px] text-muted-foreground mt-0.5">{p.descripcion}</p>
                                         )}
                                     </div>
 
@@ -611,6 +631,21 @@ export default function EspecialidadesConfig({
                             <div className="text-center py-6 text-xs text-muted-foreground">
                                 No hay campos personalizados en esta plantilla.
                             </div>
+                        )}
+                    </div>
+
+                    <div className="pt-3 border-t flex items-center justify-between gap-2">
+                        <Button variant="outline" size="sm" onClick={() => setPreviewEspecialidad(null)}>
+                            Cerrar
+                        </Button>
+                        {previewEspecialidad && (
+                            <a
+                                href={`/admin/plantillas-consultas?especialidad_id=${previewEspecialidad.id}`}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl text-xs shadow-xs"
+                            >
+                                <Sliders className="size-3.5" />
+                                Configurar Campos en Form Builder
+                            </a>
                         )}
                     </div>
                 </DialogContent>

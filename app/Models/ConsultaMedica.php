@@ -34,6 +34,7 @@ class ConsultaMedica extends Model
         'conclusion',
         'plan_tratamiento',
         'observaciones_adicionales',
+        'datos_especialidad',
 
         'estado',
         'finalizada_at',
@@ -44,6 +45,7 @@ class ConsultaMedica extends Model
         'peso_kg' => 'float',
         'talla_cm' => 'float',
         'imc' => 'float',
+        'datos_especialidad' => 'array',
         'finalizada_at' => 'datetime',
     ];
 

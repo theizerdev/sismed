@@ -182,9 +182,26 @@ class ConsultaMedicaController extends Controller
         ->orderBy('nombre_estudio', 'asc')
         ->get(['id', 'tipo_estudio', 'nombre_estudio', 'indicaciones_predeterminadas', 'especialidad_id']);
 
+        // Cargar plantilla de especialidad activa (personalizada de la empresa o sistema)
+        $plantillaEspecialidad = null;
+        if ($cita->especialidad_id) {
+            $plantillaEspecialidad = \App\Models\PlantillaConsulta::where('especialidad_id', $cita->especialidad_id)
+                ->where('empresa_id', $cita->empresa_id)
+                ->where('status', true)
+                ->first();
+
+            if (! $plantillaEspecialidad) {
+                $plantillaEspecialidad = \App\Models\PlantillaConsulta::where('especialidad_id', $cita->especialidad_id)
+                    ->where('es_sistema', true)
+                    ->where('status', true)
+                    ->first();
+            }
+        }
+
         return Inertia::render('admin/Consultas/Atencion', [
             'cita' => $cita,
             'consultaExistente' => $consulta,
+            'plantillaEspecialidad' => $plantillaEspecialidad,
             'catalogoCie10Inicial' => $catalogoCie10,
             'catalogoEstudiosInicial' => $catalogoEstudios,
         ]);
@@ -283,6 +300,7 @@ class ConsultaMedicaController extends Controller
             'conclusion' => 'nullable|string',
             'plan_tratamiento' => 'nullable|string',
             'observaciones_adicionales' => 'nullable|string',
+            'datos_especialidad' => 'nullable|array',
 
             'diagnosticos_cie10_lista' => 'nullable|array',
             'diagnosticos_cie10_lista.*.codigo' => 'required_with:diagnosticos_cie10_lista|string',
@@ -344,6 +362,7 @@ class ConsultaMedicaController extends Controller
                     'conclusion' => $validated['conclusion'] ?? null,
                     'plan_tratamiento' => $validated['plan_tratamiento'] ?? null,
                     'observaciones_adicionales' => $validated['observaciones_adicionales'] ?? null,
+                    'datos_especialidad' => $validated['datos_especialidad'] ?? null,
                     'estado' => 'finalizada',
                     'finalizada_at' => now(),
                 ]

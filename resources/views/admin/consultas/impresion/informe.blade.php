@@ -369,6 +369,27 @@
         {!! !empty(trim(strip_tags($consulta->examen_fisico ?? ''))) ? $consulta->examen_fisico : 'Sin alteración ni hallazgos patológicos aparentes.' !!}
     </div>
 
+    @if(!empty($consulta->datos_especialidad) && is_array($consulta->datos_especialidad) && count($consulta->datos_especialidad) > 0)
+    <!-- EVALUACIÓN ESPECIALIZADA -->
+    <div class="section-header">EVALUACIÓN ESPECIALIZADA: {{ strtoupper($consulta->especialidad->nombre ?? 'ESPECIALIDAD') }}</div>
+    <div class="section-content text-bold" style="padding: 4px 8px;">
+        <table style="width: 100%; border-collapse: collapse;">
+            @foreach($consulta->datos_especialidad as $campoClave => $campoValor)
+                @if(!empty($campoValor) || $campoValor === '0' || $campoValor === 0 || $campoValor === true)
+                    <tr>
+                        <td style="width: 40%; font-weight: bold; color: #334155; border: none; padding: 2px 4px; font-size: 10px;">
+                            • {{ ucwords(str_replace(['_', '-'], ' ', $campoClave)) }}:
+                        </td>
+                        <td style="border: none; padding: 2px 4px; font-size: 10px;">
+                            {{ is_bool($campoValor) ? ($campoValor ? 'SÍ' : 'NO') : (is_array($campoValor) ? implode(', ', $campoValor) : $campoValor) }}
+                        </td>
+                    </tr>
+                @endif
+            @endforeach
+        </table>
+    </div>
+    @endif
+
     <!-- CONCLUSIÓN I/D (DIAGNÓSTICOS) -->
     <div class="section-header">CONCLUSIÓN I/D</div>
     <div class="section-content text-bold uppercase">

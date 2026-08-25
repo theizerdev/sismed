@@ -3,6 +3,8 @@ import plantillasPreconsulta from './plantillas-preconsulta'
 import consultas from './consultas'
 import monitoring from './monitoring'
 import empresas from './empresas'
+import especialidades from './especialidades'
+import plantillasConsultas from './plantillas-consultas'
 import integrations from './integrations'
 import medicos from './medicos'
 import pacientes from './pacientes'
@@ -17,6 +19,8 @@ plantillasPreconsulta: Object.assign(plantillasPreconsulta, plantillasPreconsult
 consultas: Object.assign(consultas, consultas),
 monitoring: Object.assign(monitoring, monitoring),
 empresas: Object.assign(empresas, empresas),
+especialidades: Object.assign(especialidades, especialidades),
+plantillasConsultas: Object.assign(plantillasConsultas, plantillasConsultas),
 integrations: Object.assign(integrations, integrations),
 medicos: Object.assign(medicos, medicos),
 pacientes: Object.assign(pacientes, pacientes),

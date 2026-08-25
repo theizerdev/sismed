@@ -50,8 +50,14 @@ class EmpresaEspecialidadController extends Controller
     /**
      * Update specialty configuration for the empresa.
      */
-    public function update(Request $request, Empresa $empresa)
+    public function update(Request $request, ?Empresa $empresa = null)
     {
+        $targetEmpresa = $empresa && $empresa->exists ? $empresa : $request->user()->empresa;
+
+        if (! $targetEmpresa) {
+            abort(404, 'Empresa no encontrada.');
+        }
+
         $request->validate([
             'especialidades' => 'required|array|min:1',
             'especialidades.*' => 'exists:especialidades,id',
@@ -74,7 +80,7 @@ class EmpresaEspecialidadController extends Controller
             ];
         }
 
-        $empresa->especialidades()->sync($syncData);
+        $targetEmpresa->especialidades()->sync($syncData);
 
         return back()->with('success', 'Configuración de especialidades médicas actualizada con éxito.');
     }

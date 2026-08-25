@@ -61,6 +61,10 @@ import { ModuleHeader } from '@/components/module-header';
 import { notifySuccess, notifyError } from '@/utils/notifications';
 import { cn } from '@/lib/utils';
 import { RichTextEditor } from '@/components/rich-text-editor';
+import {
+    EspecialidadFormRenderer,
+    PlantillaEspecialidad,
+} from '@/components/admin/consultas/EspecialidadFormRenderer';
 
 interface MedicamentoItem {
     medicamento_nombre: string;
@@ -161,6 +165,7 @@ interface Cie10Option {
 interface Props {
     cita: Cita;
     consultaExistente?: any;
+    plantillaEspecialidad?: PlantillaEspecialidad | null;
     catalogoCie10Inicial?: Cie10Option[];
     catalogoEstudiosInicial?: CatalogoEstudioOption[];
 }
@@ -196,6 +201,7 @@ const SUGERENCIAS_ESTUDIOS_DEFAULT: CatalogoEstudioOption[] = [
 export default function Atencion({
     cita,
     consultaExistente,
+    plantillaEspecialidad,
     catalogoCie10Inicial = [],
     catalogoEstudiosInicial = [],
 }: Props) {
@@ -283,6 +289,7 @@ export default function Atencion({
         conclusion: consulta.conclusion || '',
         plan_tratamiento: consulta.plan_tratamiento || '',
         observaciones_adicionales: consulta.observaciones_adicionales || '',
+        datos_especialidad: (consulta.datos_especialidad || {}) as Record<string, any>,
         indicaciones_generales: consulta.receta?.indicaciones_generales || '',
         medicamentos: (consulta.receta?.medicamentos || []) as MedicamentoItem[],
         indicaciones_estudios: ordenEst?.indicaciones_generales || '',
@@ -690,13 +697,12 @@ export default function Atencion({
                 title={__('Atención Médica en Consultorio')}
                 description={__('Expediente clínico electrónico, orden de estudios y prescripción de recetas.')}
                 icon={<Stethoscope className="h-6 w-6 text-primary" />}
-                action={
-                    <Button onClick={() => router.get('/admin/consultas/sala-de-espera')} variant="outline" className="rounded-xl font-bold">
-                        <ChevronLeft className="h-4 w-4 mr-1" />
-                        {__('Volver a Consultas')}
-                    </Button>
-                }
-            />
+            >
+                <Button onClick={() => router.get('/admin/consultas/sala-de-espera')} variant="outline" className="rounded-xl font-bold">
+                    <ChevronLeft className="h-4 w-4 mr-1" />
+                    {__('Volver a Consultas')}
+                </Button>
+            </ModuleHeader>
 
             {/* Ficha Resumen del Paciente */}
             <div className="p-5 bg-card rounded-3xl border shadow-2xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-l-4 border-l-primary">
@@ -1039,6 +1045,22 @@ export default function Atencion({
                                 placeholder="Describa hallazgos fisiológicos en la exploración clínica..."
                             />
                         </div>
+
+                        {/* SECCIÓN DINÁMICA: EVALUACIÓN DE ESPECIALIDAD */}
+                        {plantillaEspecialidad && (
+                            <div className="pt-2 border-t">
+                                <EspecialidadFormRenderer
+                                    plantilla={plantillaEspecialidad}
+                                    values={data.datos_especialidad || {}}
+                                    onChange={(fieldId, val) =>
+                                        setData('datos_especialidad', {
+                                            ...(data.datos_especialidad || {}),
+                                            [fieldId]: val,
+                                        })
+                                    }
+                                />
+                            </div>
+                        )}
 
                         {/* Campo Conclusión Diagnóstica */}
                         <div className="space-y-2 pt-2 border-t">
