@@ -42,6 +42,7 @@ import {
     Eye,
     Paperclip,
     Sparkles,
+    CalendarSync,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -973,6 +974,38 @@ export default function Index({
         setIsCreateModalOpen(true);
     };
 
+    const handleOpenReagendar = (cita: Cita) => {
+        setIsDetailModalOpen(false);
+        setEditingCita(cita);
+
+        const fecha = cita.fecha_hora_inicio.substring(0, 10);
+        const hIni = cita.fecha_hora_inicio.includes('T') ? cita.fecha_hora_inicio.substring(11, 16) : cita.fecha_hora_inicio.substring(11, 16);
+        const hFin = cita.fecha_hora_fin && cita.fecha_hora_fin.includes('T') ? cita.fecha_hora_fin.substring(11, 16) : addMinutesToTime(hIni, cita.duracion_minutos || 30);
+        const fechaFin = cita.fecha_hora_fin || `${fecha}T${hFin}:00`;
+
+        setData({
+            categoria_cita: cita.categoria_cita || 'medica',
+            catalogo_estudio_id: cita.catalogo_estudio_id?.toString() || '',
+            paciente_id: cita.paciente_id?.toString() || '',
+            medico_id: cita.medico_id?.toString() || '',
+            especialidad_id: cita.especialidad_id?.toString() || '',
+            tipo_atencion_id: cita.tipo_atencion_id?.toString() || '',
+            sucursal_id: cita.sucursal_id?.toString() || '',
+            fecha_reserva: fecha,
+            hora_inicio: hIni,
+            hora_fin: hFin,
+            fecha_hora_inicio: cita.fecha_hora_inicio,
+            fecha_hora_fin: fechaFin,
+            duracion_minutos: cita.duracion_minutos || 30,
+            motivo_consulta: cita.motivo_consulta || '',
+            notas_recepcion: cita.notas_recepcion || '',
+            monto_estimado: cita.monto_estimado?.toString() || '',
+        });
+
+        setSelectedSlotInicio(cita.fecha_hora_inicio);
+        setIsCreateModalOpen(true);
+    };
+
     const handleServiceSelect = (servicioId: string) => {
         const srv = catalogoServicios.find((s) => s.id.toString() === servicioId);
         if (srv) {
@@ -1545,7 +1578,18 @@ export default function Index({
                                                             {c.estado_formateado}
                                                         </Badge>
                                                     </td>
-                                                    <td className="px-4 py-3 text-right space-x-2">
+                                                    <td className="px-4 py-3 text-right space-x-1.5 whitespace-nowrap">
+                                                        {c.estado !== 'atendida' && c.estado_pago !== 'pagado' && (
+                                                            <Button
+                                                                variant="outline"
+                                                                size="sm"
+                                                                onClick={() => handleOpenReagendar(c)}
+                                                                className="h-8 text-xs font-bold rounded-xl border-indigo-200 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-50"
+                                                            >
+                                                                <CalendarSync className="size-3.5 mr-1" />
+                                                                {__('Reagendar')}
+                                                            </Button>
+                                                        )}
                                                         <Button
                                                             variant="ghost"
                                                             size="sm"
@@ -1553,6 +1597,7 @@ export default function Index({
                                                                 setSelectedCita(c);
                                                                 setIsDetailModalOpen(true);
                                                             }}
+                                                            className="h-8 text-xs font-bold rounded-xl"
                                                         >
                                                             {__('Ver Detalle')}
                                                         </Button>
@@ -2010,10 +2055,25 @@ export default function Index({
                             {/* Fecha, Hora, Telemedicina y Estado de Pago en Caja */}
                             <div className="space-y-3">
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 bg-muted/30 rounded-2xl border gap-2 text-xs">
-                                    <span className="text-slate-700 dark:text-slate-300 font-bold flex items-center gap-2">
-                                        <Clock className="h-4 w-4 text-indigo-600 shrink-0" />
-                                        {new Date(selectedCita.fecha_hora_inicio.replace(' ', 'T')).toLocaleString([], { dateStyle: 'full', timeStyle: 'short' })}
-                                    </span>
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                        <span className="text-slate-700 dark:text-slate-300 font-bold flex items-center gap-2">
+                                            <Clock className="h-4 w-4 text-indigo-600 shrink-0" />
+                                            {new Date(selectedCita.fecha_hora_inicio.replace(' ', 'T')).toLocaleString([], { dateStyle: 'full', timeStyle: 'short' })}
+                                        </span>
+
+                                        {selectedCita.estado !== 'atendida' && selectedCita.estado_pago !== 'pagado' && (
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => handleOpenReagendar(selectedCita)}
+                                                className="h-7 text-[11px] font-bold rounded-xl border-indigo-200 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 flex items-center gap-1.5 cursor-pointer shadow-2xs px-2.5"
+                                            >
+                                                <CalendarSync className="size-3.5 text-indigo-600" />
+                                                {__('Reagendar')}
+                                            </Button>
+                                        )}
+                                    </div>
 
                                     {/* Estado de Pago en Caja (Diferenciado de la Confirmación Clínica) */}
                                     <div className="flex items-center gap-2 self-end sm:self-auto">
@@ -2366,6 +2426,16 @@ export default function Index({
                                 <Trash2 className="h-4 w-4 mr-1.5" />
                                 {__('Eliminar Cita')}
                             </Button>
+                            {selectedCita.estado !== 'atendida' && selectedCita.estado_pago !== 'pagado' && (
+                                <Button
+                                    type="button"
+                                    onClick={() => handleOpenReagendar(selectedCita)}
+                                    className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs h-10 px-4 flex items-center gap-1.5 shadow-sm"
+                                >
+                                    <CalendarSync className="size-4" />
+                                    {__('Reagendar Cita')}
+                                </Button>
+                            )}
                             <Button variant="outline" onClick={() => setIsDetailModalOpen(false)} className="rounded-xl font-bold text-xs h-10 px-5">
                                 {__('Cerrar')}
                             </Button>
