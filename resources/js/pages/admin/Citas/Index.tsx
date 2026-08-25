@@ -1482,8 +1482,28 @@ export default function Index({
             </div>
 
             {/* Modal: Agendar / Editar Cita */}
-            <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
-                <DialogContent className="w-full sm:max-w-5xl rounded-3xl shadow-2xl overflow-y-auto max-h-[90vh] p-6 md:p-8">
+            <Dialog
+                open={isCreateModalOpen}
+                onOpenChange={(open) => {
+                    if (!open && isQuickCreatePacienteOpen) {
+                        return;
+                    }
+                    setIsCreateModalOpen(open);
+                }}
+            >
+                <DialogContent
+                    onPointerDownOutside={(e) => {
+                        if (isQuickCreatePacienteOpen) {
+                            e.preventDefault();
+                        }
+                    }}
+                    onInteractOutside={(e) => {
+                        if (isQuickCreatePacienteOpen) {
+                            e.preventDefault();
+                        }
+                    }}
+                    className="w-full sm:max-w-5xl rounded-3xl shadow-2xl overflow-y-auto max-h-[90vh] p-6 md:p-8"
+                >
                     <DialogHeader>
                         <DialogTitle className="text-xl font-bold flex items-center gap-2 text-foreground">
                             <CalendarIcon className="h-6 w-6 text-primary" />

@@ -142,7 +142,15 @@ export default function ModalCrearPacienteRapido({
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="w-full sm:max-w-2xl rounded-3xl shadow-2xl p-6 max-h-[90vh] overflow-y-auto">
+            <DialogContent
+                onPointerDownOutside={(e) => e.preventDefault()}
+                onInteractOutside={(e) => e.preventDefault()}
+                onEscapeKeyDown={(e) => {
+                    e.stopPropagation();
+                    onClose();
+                }}
+                className="w-full sm:max-w-2xl rounded-3xl shadow-2xl p-6 max-h-[90vh] overflow-y-auto z-[60]"
+            >
                 <DialogHeader>
                     <DialogTitle className="text-xl font-bold flex items-center gap-2 text-foreground">
                         <div className="size-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
