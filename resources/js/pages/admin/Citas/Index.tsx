@@ -528,16 +528,6 @@ export default function Index({
         const startStr = info.event.startStr;
         const endStr = info.event.endStr || new Date(info.event.start.getTime() + (info.event.extendedProps.duracion_minutos || 30) * 60000).toISOString();
 
-        // Regla de anticipación mínima de 2 horas
-        const newStartMs = new Date(info.event.start).getTime();
-        const minLeadMs = Date.now() + 2 * 60 * 60 * 1000;
-
-        if (newStartMs < minLeadMs) {
-            info.revert();
-            notifyError(__('Las citas deben programarse con un mínimo de 2 horas de anticipación.'));
-            return;
-        }
-
         router.patch(
             `/admin/citas/${citaId}/mover`,
             {
@@ -967,15 +957,6 @@ export default function Index({
         e.preventDefault();
         if (!data.fecha_hora_inicio) {
             notifyError(__('Por favor selecciona un turno/horario disponible.'));
-            return;
-        }
-
-        // Regla de anticipación mínima de 2 horas al agendar nueva cita
-        const startMs = new Date(data.fecha_hora_inicio).getTime();
-        const minLeadMs = Date.now() + 2 * 60 * 60 * 1000;
-
-        if (!editingCita && startMs < minLeadMs) {
-            notifyError(__('Las citas deben programarse con un mínimo de 2 horas de anticipación.'));
             return;
         }
 

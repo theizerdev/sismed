@@ -68,14 +68,13 @@ class CitaService
         $slots = [];
         $slotActual = $inicioJornada->copy();
         $ahora = Carbon::now();
-        $margenMinimoLead = $ahora->copy()->addHours(2); // Regla de anticipación de 2 horas
 
         while ($slotActual->copy()->addMinutes($duracionMinutos)->lte($finJornada)) {
             $slotFin = $slotActual->copy()->addMinutes($duracionMinutos);
             $slotFinConBuffer = $slotFin->copy()->addMinutes($bufferMinutos);
 
-            // Regla A: Anticipación mínima de 2 horas (filtra cualquier horario pasado o a menos de 2h)
-            if ($slotActual->lt($margenMinimoLead)) {
+            // Filtrar únicamente horarios que ya hayan pasado respecto a la hora actual
+            if ($slotActual->lt($ahora)) {
                 $slotActual = $slotFinConBuffer;
                 continue;
             }
@@ -162,15 +161,11 @@ class CitaService
     }
 
     /**
-     * Validar margen de anticipación mínima (2 horas).
+     * Validar margen de anticipación mínima (regla 2 horas removida para permitir citas inmediatas).
      */
     public function validarAnticipacionMinima(Carbon $fechaHoraInicio): void
     {
-        if ($fechaHoraInicio->lt(Carbon::now()->addHours(2))) {
-            throw ValidationException::withMessages([
-                'fecha_hora_inicio' => 'Las citas deben programarse con un mínimo de 2 horas de anticipación.',
-            ]);
-        }
+        // Sin restricción de 2 horas previas
     }
 
     /**
