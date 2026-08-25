@@ -481,6 +481,12 @@ export default function Index({
                     estado_formateado: cita.estado_formateado,
                     paciente_nombre: nombrePaciente,
                     medico_nombre: nombreMedico,
+                    especialidad_nombre: cita.especialidad?.nombre,
+                    categoria_cita: cita.categoria_cita,
+                    servicio_nombre: cita.catalogo_estudio?.nombre_estudio,
+                    motivo_consulta: cita.motivo_consulta,
+                    estado_pago: cita.estado_pago,
+                    monto_estimado: cita.monto_estimado,
                     tipo_atencion: cita.tipoAtencion?.nombre || 'Consulta',
                     link_virtual: cita.link_virtual,
                     duracion_minutos: cita.duracion_minutos,
@@ -600,7 +606,9 @@ export default function Index({
     const renderEventContent = (eventInfo: any) => {
         const props = eventInfo.event.extendedProps;
         const isList = eventInfo.view.type.startsWith('list');
+        const isMonth = eventInfo.view.type.includes('Month') || eventInfo.view.type.includes('dayGrid');
         const bgColor = eventInfo.event.backgroundColor || '#3b82f6';
+        const duracion = props.duracion_minutos || 30;
 
         if (isList) {
             return (
@@ -615,18 +623,68 @@ export default function Index({
             );
         }
 
-        // Estilo tarjeta llena con color del estado y texto en blanco brillante 100% visible
+        // Vista Mes o citas cortas (<= 30 min)
+        if (isMonth || duracion <= 30) {
+            return (
+                <div
+                    className="px-2 py-1 w-full h-full text-white font-medium text-xs overflow-hidden flex items-center justify-between gap-1.5 rounded-lg shadow-xs transition-all hover:brightness-110 leading-tight"
+                    style={{ backgroundColor: bgColor }}
+                >
+                    <span className="font-bold text-xs truncate text-white">
+                        {props.paciente_nombre}
+                    </span>
+                    <div className="flex items-center gap-1 text-[10px] font-mono shrink-0 font-bold bg-black/30 text-white px-1.5 py-0.5 rounded">
+                        <span>{eventInfo.timeText}</span>
+                        {props.link_virtual && <Video className="h-3 w-3 text-blue-200" />}
+                    </div>
+                </div>
+            );
+        }
+
+        // Vista Expandida para citas mayores a 30 min (> 30 min)
         return (
             <div
-                className="px-2 py-1 w-full h-full text-white font-medium text-xs overflow-hidden flex items-center justify-between gap-1.5 rounded-lg shadow-xs transition-all hover:brightness-110 leading-tight"
+                className="p-2 w-full h-full text-white font-medium text-xs overflow-hidden flex flex-col justify-between rounded-lg shadow-xs transition-all hover:brightness-110 leading-tight gap-1"
                 style={{ backgroundColor: bgColor }}
             >
-                <span className="font-bold text-xs truncate text-white">
-                    {props.paciente_nombre}
-                </span>
-                <div className="flex items-center gap-1 text-[10px] font-mono shrink-0 font-bold bg-black/30 text-white px-1.5 py-0.5 rounded">
-                    <span>{eventInfo.timeText}</span>
-                    {props.link_virtual && <Video className="h-3 w-3 text-blue-200" />}
+                {/* Fila Superior: Paciente y Horario */}
+                <div className="flex items-center justify-between gap-1.5">
+                    <span className="font-extrabold text-xs truncate text-white">
+                        {props.paciente_nombre}
+                    </span>
+                    <div className="flex items-center gap-1 text-[10px] font-mono shrink-0 font-bold bg-black/30 text-white px-1.5 py-0.5 rounded shadow-2xs">
+                        <span>{eventInfo.timeText}</span>
+                        <span className="opacity-85">({duracion}m)</span>
+                        {props.link_virtual && <Video className="h-3 w-3 text-blue-200" />}
+                    </div>
+                </div>
+
+                {/* Fila Media: Profesional / Estudio Asignado */}
+                <div className="flex items-center gap-1.5 text-[11px] font-semibold text-white/95 truncate">
+                    {props.categoria_cita === 'servicio' ? (
+                        <>
+                            <FlaskConical className="size-3 shrink-0 opacity-80" />
+                            <span className="truncate">{props.servicio_nombre || props.motivo_consulta || __('Servicio de Laboratorio')}</span>
+                        </>
+                    ) : (
+                        <>
+                            <Stethoscope className="size-3 shrink-0 opacity-80" />
+                            <span className="truncate">{props.medico_nombre} {props.especialidad_nombre ? `• ${props.especialidad_nombre}` : ''}</span>
+                        </>
+                    )}
+                </div>
+
+                {/* Fila Inferior: Motivo y Estado de Pago */}
+                <div className="flex items-center justify-between gap-1 pt-0.5 border-t border-white/20 text-[10px]">
+                    <span className="truncate opacity-90 font-medium">
+                        {props.motivo_consulta ? props.motivo_consulta : (props.tipo_atencion || __('Consulta'))}
+                    </span>
+                    <span className={cn(
+                        "px-1.5 py-0.5 rounded font-extrabold shrink-0 text-[9px] uppercase tracking-wider",
+                        props.estado_pago === 'pagado' ? "bg-emerald-950/40 text-emerald-100" : "bg-black/30 text-amber-100"
+                    )}>
+                        {props.estado_pago === 'pagado' ? __('💵 Pagada') : __('⏳ Pend. Pago')}
+                    </span>
                 </div>
             </div>
         );
