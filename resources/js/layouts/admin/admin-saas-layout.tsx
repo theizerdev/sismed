@@ -525,6 +525,11 @@ export default function AdminSaasLayout({
                                     href: '/admin/tipos-atencion',
                                     permission: 'tipos_atencion.view',
                                 },
+                                {
+                                    title: 'Servicios & Laboratorio',
+                                    href: '/admin/servicios',
+                                    permission: 'servicios.view',
+                                },
                             ].filter(item => hasPermission(item.permission));
 
                             if (especialidadesItems.length === 0) return null;

@@ -22,11 +22,14 @@ class Cita extends Model
         'medico_id',
         'especialidad_id',
         'tipo_atencion_id',
+        'categoria_cita',
+        'catalogo_estudio_id',
         'fecha_hora_inicio',
         'fecha_hora_fin',
         'duracion_minutos',
         'buffer_descanso_minutos',
         'estado',
+        'estado_servicio',
         'motivo_consulta',
         'notas_recepcion',
         'link_virtual',
@@ -168,6 +171,16 @@ class Cita extends Model
     public function consulta()
     {
         return $this->hasOne(ConsultaMedica::class, 'cita_id');
+    }
+
+    public function catalogoEstudio()
+    {
+        return $this->belongsTo(CatalogoEstudio::class, 'catalogo_estudio_id');
+    }
+
+    public function archivosResultados()
+    {
+        return $this->hasMany(CitaArchivoResultado::class, 'cita_id')->latest();
     }
 }
 

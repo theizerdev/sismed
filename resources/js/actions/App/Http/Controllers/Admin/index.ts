@@ -14,6 +14,7 @@ import PaisController from './PaisController'
 import QueueMonitoringController from './QueueMonitoringController'
 import RoleController from './RoleController'
 import ServerMonitoringController from './ServerMonitoringController'
+import ServicioController from './ServicioController'
 import SessionMonitoringController from './SessionMonitoringController'
 import SucursalController from './SucursalController'
 import TaskMonitoringController from './TaskMonitoringController'
@@ -36,6 +37,7 @@ PaisController: Object.assign(PaisController, PaisController),
 QueueMonitoringController: Object.assign(QueueMonitoringController, QueueMonitoringController),
 RoleController: Object.assign(RoleController, RoleController),
 ServerMonitoringController: Object.assign(ServerMonitoringController, ServerMonitoringController),
+ServicioController: Object.assign(ServicioController, ServicioController),
 SessionMonitoringController: Object.assign(SessionMonitoringController, SessionMonitoringController),
 SucursalController: Object.assign(SucursalController, SucursalController),
 TaskMonitoringController: Object.assign(TaskMonitoringController, TaskMonitoringController),

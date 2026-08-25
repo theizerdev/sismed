@@ -40,6 +40,23 @@ Route::middleware(['verified', 'auth', 'tenant'])->group(function () {
         ->name('citas.send-whatsapp-reminder')
         ->can('citas.edit');
 
+    // Rutas de Carga y Gestión de Resultados de Servicios / Laboratorio
+    Route::post('/citas/{cita}/resultados', [CitaController::class, 'uploadResultado'])
+        ->name('citas.upload-resultado')
+        ->can('citas.edit');
+
+    Route::delete('/citas/resultados/{archivo}', [CitaController::class, 'deleteResultado'])
+        ->name('citas.delete-resultado')
+        ->can('citas.edit');
+
+    Route::patch('/citas/{cita}/estado-servicio', [CitaController::class, 'updateEstadoServicio'])
+        ->name('citas.update-estado-servicio')
+        ->can('citas.edit');
+
+    Route::post('/citas/{cita}/send-whatsapp-resultados', [CitaController::class, 'sendResultadosWhatsApp'])
+        ->name('citas.send-whatsapp-resultados')
+        ->can('citas.edit');
+
     // Rutas de Cuestionarios y Plantillas de Pre-Consulta
     Route::post('/citas/{cita}/generar-preconsulta', [\App\Http\Controllers\Admin\PreconsultaAdminController::class, 'generarLinkCita'])
         ->name('citas.generar-preconsulta')

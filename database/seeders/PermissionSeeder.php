@@ -183,6 +183,12 @@ class PermissionSeeder extends Seeder
                 'tipos_atencion.edit' => 'Editar Tipo de Atención',
                 'tipos_atencion.delete' => 'Eliminar Tipo de Atención',
 
+                // Módulo: Catálogo de Servicios & Laboratorio
+                'servicios.view' => 'Ver Catálogo de Servicios / Laboratorio',
+                'servicios.create' => 'Crear Servicio / Estudio',
+                'servicios.edit' => 'Editar Servicio / Estudio',
+                'servicios.delete' => 'Eliminar Servicio / Estudio',
+
                 // Módulo: Citas Médicas
                 'citas.view' => 'Ver Agenda de Citas',
                 'citas.create' => 'Agendar Cita',
@@ -208,6 +214,7 @@ class PermissionSeeder extends Seeder
                     str_starts_with($permission, 'pacientes.') => 'pacientes',
                     str_starts_with($permission, 'medicos.') => 'medicos',
                     str_starts_with($permission, 'tipos_atencion.') => 'tipos_atencion',
+                    str_starts_with($permission, 'servicios.') => 'servicios',
                     str_starts_with($permission, 'citas.') => 'citas',
                     str_starts_with($permission, 'expedientes.') => 'expedientes',
                     str_starts_with($permission, 'recetas.') => 'recetas',

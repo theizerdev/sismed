@@ -10,6 +10,7 @@ import medicos from './medicos'
 import pacientes from './pacientes'
 import paises from './paises'
 import roles from './roles'
+import servicios from './servicios'
 import sucursales from './sucursales'
 import tiposAtencion from './tipos-atencion'
 import usuarios from './usuarios'
@@ -26,6 +27,7 @@ medicos: Object.assign(medicos, medicos),
 pacientes: Object.assign(pacientes, pacientes),
 paises: Object.assign(paises, paises),
 roles: Object.assign(roles, roles),
+servicios: Object.assign(servicios, servicios),
 sucursales: Object.assign(sucursales, sucursales),
 tiposAtencion: Object.assign(tiposAtencion, tiposAtencion),
 usuarios: Object.assign(usuarios, usuarios),

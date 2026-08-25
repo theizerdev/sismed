@@ -35,6 +35,13 @@ import {
     PanelLeftClose,
     PanelLeftOpen,
     UserPlus,
+    FlaskConical,
+    FileText,
+    Upload,
+    Download,
+    Eye,
+    Paperclip,
+    Sparkles,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -98,28 +105,28 @@ const MiniCalendar: React.FC<MiniCalendarProps> = ({ selectedDate, onSelectDate 
         return { date: new Date(year, month, i + 1), isCurrentMonth: true };
     });
 
-    const totalCells = Math.ceil((prevDays.length + currentDays.length) / 7) * 7;
-    const nextDaysCount = totalCells - (prevDays.length + currentDays.length);
-    const nextDays = Array.from({ length: nextDaysCount }, (_, i) => {
-        return { date: new Date(year, month + 1, i + 1), isCurrentMonth: false };
-    });
+    const allCells = [...prevDays, ...currentDays];
+    const totalCells = allCells.length;
+    const remainingCells = (7 - (totalCells % 7)) % 7;
 
-    const allCells = [...prevDays, ...currentDays, ...nextDays];
+    for (let i = 1; i <= remainingCells; i++) {
+        allCells.push({ date: new Date(year, month + 1, i), isCurrentMonth: false });
+    }
 
     const monthNames = [
         'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
     ];
 
-    const weekHeaderDays = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+    const weekHeaderDays = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
 
     return (
-        <div className="space-y-3 p-3.5 bg-card rounded-2xl border shadow-xs">
+        <div className="bg-card p-3 rounded-2xl border shadow-xs space-y-2 select-none">
             <div className="flex items-center justify-between px-1">
-                <span className="font-bold text-sm text-foreground capitalize">
+                <span className="text-xs font-extrabold text-foreground">
                     {monthNames[month]} {year}
                 </span>
-                <div className="flex items-center space-x-1">
+                <div className="flex items-center gap-1">
                     <Button
                         type="button"
                         variant="ghost"
@@ -201,10 +208,40 @@ interface Medico {
 interface TipoAtencion {
     id: number;
     nombre: string;
+    categoria?: 'medica' | 'servicio';
     duracion_estimada_minutos: number;
     requiere_link_virtual: boolean;
     costo_adicional_sugerido?: number;
     modalidad: string;
+}
+
+export interface CatalogoServicioItem {
+    id: number;
+    codigo?: string;
+    categoria: string;
+    nombre_estudio: string;
+    indicaciones_predeterminadas?: string;
+    precio: number;
+    duracion_minutos: number;
+    status: boolean;
+}
+
+export interface CitaArchivoResultado {
+    id: number;
+    nombre_original: string;
+    archivo_path: string;
+    url_descarga: string;
+    tamano_formateado: string;
+    tamano_bytes?: number;
+    mime_type?: string;
+    es_pdf: boolean;
+    es_imagen: boolean;
+    notas?: string;
+    created_at: string;
+    subido_por?: {
+        id: number;
+        name: string;
+    };
 }
 
 interface Especialidad {
@@ -220,8 +257,13 @@ interface Sucursal {
 interface Cita {
     id: number;
     codigo_cita: string;
+    categoria_cita?: 'medica' | 'servicio';
+    catalogo_estudio_id?: number;
+    catalogo_estudio?: CatalogoServicioItem;
+    estado_servicio?: 'pendiente_muestra' | 'en_proceso' | 'resultados_listos' | 'entregado';
+    archivos_resultados?: CitaArchivoResultado[];
     paciente_id: number;
-    medico_id: number;
+    medico_id?: number;
     especialidad_id?: number;
     tipo_atencion_id?: number;
     sucursal_id?: number;
@@ -231,6 +273,9 @@ interface Cita {
     estado: 'pendiente' | 'confirmada_pagada' | 'en_sala_espera' | 'en_consulta' | 'atendida' | 'cancelada' | 'no_asistio' | 'bloqueado';
     color_estado: string;
     estado_formateado: string;
+    estado_pago?: 'pendiente' | 'pagado' | 'parcial' | 'reembolsado';
+    estado_pago_formateado?: string;
+    monto_pagado?: number;
     motivo_consulta?: string;
     notas_recepcion?: string;
     link_virtual?: string;
@@ -256,6 +301,7 @@ interface Props {
     pacientes: Paciente[];
     especialidades: Especialidad[];
     tiposAtencion: TipoAtencion[];
+    catalogoServicios?: CatalogoServicioItem[];
     sucursales: Sucursal[];
     paises?: PaisPhoneOption[];
     estadisticas: {
@@ -275,6 +321,7 @@ export default function Index({
     pacientes,
     especialidades,
     tiposAtencion,
+    catalogoServicios = [],
     sucursales,
     paises = [],
     estadisticas,
@@ -609,6 +656,8 @@ export default function Index({
 
     // ── Form State ────────────────────────────────────────────────────────────
     const { data, setData, post, put, processing, errors, reset } = useForm({
+        categoria_cita: 'medica' as 'medica' | 'servicio',
+        catalogo_estudio_id: '',
         paciente_id: '',
         medico_id: '',
         especialidad_id: '',
@@ -646,6 +695,18 @@ export default function Index({
         });
     }, [medicos, especialidades]);
 
+    const tecnicoResponsableSelectOptions: Select2Option[] = useMemo(() => {
+        return [
+            {
+                value: '',
+                label: __('Sin personal asignado (Atención por orden de llegada)'),
+                sublabel: __('Cualquier técnico o enfermero de guardia'),
+                icon: <Users className="h-4 w-4 text-muted-foreground" />,
+            },
+            ...medicoSelectOptions,
+        ];
+    }, [medicoSelectOptions]);
+
     const tipoAtencionSelectOptions: Select2Option[] = useMemo(() => {
         return tiposAtencion.map((t) => ({
             value: t.id.toString(),
@@ -655,6 +716,16 @@ export default function Index({
             icon: t.requiere_link_virtual ? <Video className="h-4 w-4 text-blue-500" /> : <Stethoscope className="h-4 w-4 text-emerald-500" />,
         }));
     }, [tiposAtencion]);
+
+    const catalogoServicioSelectOptions: Select2Option[] = useMemo(() => {
+        return catalogoServicios.map((s) => ({
+            value: s.id.toString(),
+            label: s.nombre_estudio,
+            sublabel: `${s.categoria} • $${Number(s.precio || 0).toFixed(2)} USD • ${s.duracion_minutos || 15} min`,
+            badge: s.codigo || `SRV-${s.id}`,
+            icon: <FlaskConical className="h-4 w-4 text-blue-500" />,
+        }));
+    }, [catalogoServicios]);
 
     const especialidadSelectOptions: Select2Option[] = useMemo(() => {
         return especialidades.map((e) => ({
@@ -778,6 +849,12 @@ export default function Index({
     };
 
     // ── Handlers ─────────────────────────────────────────────────────────────
+    // ── File Upload State for Results ─────────────────────────────────────────
+    const [uploadingFile, setUploadingFile] = useState<File | null>(null);
+    const [uploadNotas, setUploadNotas] = useState('');
+    const [isUploading, setIsUploading] = useState(false);
+
+    // ── Handlers ─────────────────────────────────────────────────────────────
     const handleCreateClick = (slotTime?: string, duracionMin: number = 30) => {
         setEditingCita(null);
         reset();
@@ -790,6 +867,8 @@ export default function Index({
             : currentDate.toISOString().substring(0, 10);
 
         setData({
+            categoria_cita: 'medica',
+            catalogo_estudio_id: '',
             paciente_id: pacientes[0]?.id.toString() || '',
             medico_id: defaultMedico,
             especialidad_id: defaultDocObj?.especialidad_principal_id?.toString() || especialidades[0]?.id.toString() || '',
@@ -804,6 +883,94 @@ export default function Index({
         });
         setSelectedSlotInicio(slotTime || '');
         setIsCreateModalOpen(true);
+    };
+
+    const handleServiceSelect = (servicioId: string) => {
+        const srv = catalogoServicios.find((s) => s.id.toString() === servicioId);
+        if (srv) {
+            setData((prev) => ({
+                ...prev,
+                catalogo_estudio_id: servicioId,
+                monto_estimado: srv.precio.toString(),
+                duracion_minutos: srv.duracion_minutos || 15,
+                motivo_consulta: srv.nombre_estudio,
+            }));
+        } else {
+            setData((prev) => ({
+                ...prev,
+                catalogo_estudio_id: '',
+            }));
+        }
+    };
+
+    const handleUploadFile = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!selectedCita || !uploadingFile) {
+            notifyError(__('Por favor selecciona un archivo PDF o Imagen.'));
+            return;
+        }
+
+        setIsUploading(true);
+        const formData = new FormData();
+        formData.append('archivo', uploadingFile);
+        if (uploadNotas) formData.append('notas', uploadNotas);
+
+        try {
+            const token = (document.querySelector('meta[name="csrf-token"]') as any)?.content || '';
+            const res = await fetch(`/admin/citas/${selectedCita.id}/resultados`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': token,
+                    Accept: 'application/json',
+                },
+                body: formData,
+            });
+            const resData = await res.json();
+            if (resData.success) {
+                notifySuccess(__('Resultado subido correctamente.'));
+                setUploadingFile(null);
+                setUploadNotas('');
+                router.reload({ preserveScroll: true });
+            } else {
+                notifyError(resData.message || __('Error al subir el archivo.'));
+            }
+        } catch (err) {
+            notifyError(__('Ocurrió un error al subir el resultado.'));
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
+    const handleDeleteResultado = (archivoId: number) => {
+        if (confirm(__('¿Estás seguro de eliminar este resultado adjunto?'))) {
+            router.delete(`/admin/citas/resultados/${archivoId}`, {
+                preserveScroll: true,
+                onSuccess: () => notifySuccess(__('Archivo eliminado.')),
+            });
+        }
+    };
+
+    const handleUpdateEstadoServicio = (cita: Cita, nuevoEstado: string) => {
+        router.patch(
+            `/admin/citas/${cita.id}/estado-servicio`,
+            { estado_servicio: nuevoEstado },
+            {
+                preserveScroll: true,
+                onSuccess: () => notifySuccess(__('Estado del servicio actualizado.')),
+            }
+        );
+    };
+
+    const handleSendResultadosWhatsApp = (cita: Cita) => {
+        router.post(
+            `/admin/citas/${cita.id}/send-whatsapp-resultados`,
+            {},
+            {
+                preserveScroll: true,
+                onSuccess: () => notifySuccess(__('Resultados enviados por WhatsApp al paciente.')),
+                onError: (errs) => notifyError((Object.values(errs)[0] as string) || __('No se pudieron enviar los resultados.')),
+            }
+        );
     };
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -1320,9 +1487,39 @@ export default function Index({
                     <DialogHeader>
                         <DialogTitle className="text-xl font-bold flex items-center gap-2 text-foreground">
                             <CalendarIcon className="h-6 w-6 text-primary" />
-                            {editingCita ? __('Editar Cita Médica') : __('Agendar Nueva Cita Médica')}
+                            {editingCita ? __('Editar Cita') : __('Agendar Nueva Cita')}
                         </DialogTitle>
                     </DialogHeader>
+
+                    {/* Selector de Categoría de Cita: Consulta Médica vs Servicio */}
+                    <div className="flex p-1 bg-muted/60 rounded-2xl border gap-1 mb-2">
+                        <button
+                            type="button"
+                            onClick={() => setData('categoria_cita', 'medica')}
+                            className={cn(
+                                "flex-1 py-2.5 px-4 rounded-xl font-extrabold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer",
+                                data.categoria_cita === 'medica'
+                                    ? "bg-background text-indigo-600 dark:text-indigo-400 shadow-sm border"
+                                    : "text-muted-foreground hover:text-foreground"
+                            )}
+                        >
+                            <Stethoscope className="size-4" />
+                            <span>{__('🩺 Consulta Médica (Doctor)')}</span>
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setData('categoria_cita', 'servicio')}
+                            className={cn(
+                                "flex-1 py-2.5 px-4 rounded-xl font-extrabold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer",
+                                data.categoria_cita === 'servicio'
+                                    ? "bg-background text-blue-600 dark:text-blue-400 shadow-sm border"
+                                    : "text-muted-foreground hover:text-foreground"
+                            )}
+                        >
+                            <FlaskConical className="size-4" />
+                            <span>{__('🧪 Servicio / Laboratorio / Estudio')}</span>
+                        </button>
+                    </div>
 
                     <form onSubmit={handleSubmit} className="space-y-6 py-2">
                         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -1359,50 +1556,111 @@ export default function Index({
                                     {errors.paciente_id && <p className="text-xs text-rose-500 font-medium">{errors.paciente_id}</p>}
                                 </div>
 
-                                {/* Especialidad Médica */}
-                                <div className="space-y-2">
-                                    <Label className="font-semibold text-foreground">{__('Especialidad Médica')}</Label>
-                                    <Select2
-                                        options={especialidadSelectOptions}
-                                        value={data.especialidad_id}
-                                        onChange={handleEspecialidadChange}
-                                        placeholder={__('Todas las especialidades...')}
-                                        searchPlaceholder={__('Buscar especialidad...')}
-                                    />
-                                    {errors.especialidad_id && <p className="text-xs text-rose-500 font-medium">{errors.especialidad_id}</p>}
-                                </div>
+                                {data.categoria_cita === 'servicio' ? (
+                                    /* Campos para Cita de Servicio / Laboratorio / Estudio */
+                                    <>
+                                        <div className="space-y-2">
+                                            <div className="flex items-center justify-between">
+                                                <Label className="font-semibold text-foreground">{__('Servicio / Examen Solicitado *')}</Label>
+                                                <a
+                                                    href="/admin/servicios"
+                                                    target="_blank"
+                                                    className="text-[11px] text-blue-600 hover:underline font-bold"
+                                                >
+                                                    {__('Gestionar Catálogo ↗')}
+                                                </a>
+                                            </div>
+                                            <Select2
+                                                options={catalogoServicioSelectOptions}
+                                                value={data.catalogo_estudio_id}
+                                                onChange={handleServiceSelect}
+                                                placeholder={__('Seleccionar examen o estudio del catálogo...')}
+                                                searchPlaceholder={__('Buscar por nombre, código o categoría...')}
+                                            />
+                                            {errors.catalogo_estudio_id && <p className="text-xs text-rose-500 font-medium">{errors.catalogo_estudio_id}</p>}
+                                        </div>
 
-                                {/* Médico Tratante */}
-                                <div className="space-y-2">
-                                    <Label className="font-semibold text-foreground">{__('Médico Tratante *')}</Label>
-                                    <Select2
-                                        options={filteredMedicoSelectOptions}
-                                        value={data.medico_id}
-                                        onChange={handleDoctorChange}
-                                        placeholder={__('Seleccionar médico...')}
-                                        searchPlaceholder={__('Buscar médico por nombre o especialidad...')}
-                                    />
-                                    {errors.medico_id && <p className="text-xs text-rose-500 font-medium">{errors.medico_id}</p>}
-                                </div>
+                                        {/* Indicaciones de preparación si existen */}
+                                        {(() => {
+                                            const selSrv = catalogoServicios.find((s) => s.id.toString() === data.catalogo_estudio_id);
+                                            if (selSrv?.indicaciones_predeterminadas) {
+                                                return (
+                                                    <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-xs space-y-1">
+                                                        <span className="font-bold text-amber-700 dark:text-amber-300 flex items-center gap-1.5">
+                                                            <Sparkles className="size-3.5" />
+                                                            {__('Preparación requerida para el paciente:')}
+                                                        </span>
+                                                        <p className="text-muted-foreground text-[11px]">
+                                                            {selSrv.indicaciones_predeterminadas}
+                                                        </p>
+                                                    </div>
+                                                );
+                                            }
+                                            return null;
+                                        })()}
 
-                                {/* Tipo de Atención */}
-                                <div className="space-y-2">
-                                    <Label className="font-semibold text-foreground">{__('Tipo de Atención *')}</Label>
-                                    <Select2
-                                        options={tipoAtencionSelectOptions}
-                                        value={data.tipo_atencion_id}
-                                        onChange={handleCareTypeChange}
-                                        placeholder={__('Seleccionar tipo de atención...')}
-                                        searchPlaceholder={__('Buscar tipo de atención...')}
-                                    />
-                                    {errors.tipo_atencion_id && <p className="text-xs text-rose-500 font-medium">{errors.tipo_atencion_id}</p>}
-                                </div>
+                                        {/* Responsable o Técnico (Opcional en Servicios) */}
+                                        <div className="space-y-2">
+                                            <Label className="font-semibold text-foreground">{__('Técnico / Responsable Asignado (Opcional)')}</Label>
+                                            <Select2
+                                                options={medicoSelectOptions}
+                                                value={data.medico_id}
+                                                onChange={(val) => setData('medico_id', val)}
+                                                placeholder={__('Sin personal asignado (Atención por orden de llegada)...')}
+                                                searchPlaceholder={__('Buscar personal...')}
+                                            />
+                                        </div>
+                                    </>
+                                ) : (
+                                    /* Campos para Consulta Médica Tradicional */
+                                    <>
+                                        {/* Especialidad Médica */}
+                                        <div className="space-y-2">
+                                            <Label className="font-semibold text-foreground">{__('Especialidad Médica')}</Label>
+                                            <Select2
+                                                options={especialidadSelectOptions}
+                                                value={data.especialidad_id}
+                                                onChange={handleEspecialidadChange}
+                                                placeholder={__('Todas las especialidades...')}
+                                                searchPlaceholder={__('Buscar especialidad...')}
+                                            />
+                                            {errors.especialidad_id && <p className="text-xs text-rose-500 font-medium">{errors.especialidad_id}</p>}
+                                        </div>
 
-                                {/* Motivo de Consulta */}
+                                        {/* Médico Tratante */}
+                                        <div className="space-y-2">
+                                            <Label className="font-semibold text-foreground">{__('Médico Tratante *')}</Label>
+                                            <Select2
+                                                options={filteredMedicoSelectOptions}
+                                                value={data.medico_id}
+                                                onChange={handleDoctorChange}
+                                                placeholder={__('Seleccionar médico...')}
+                                                searchPlaceholder={__('Buscar médico por nombre o especialidad...')}
+                                            />
+                                            {errors.medico_id && <p className="text-xs text-rose-500 font-medium">{errors.medico_id}</p>}
+                                        </div>
+
+                                        {/* Tipo de Atención */}
+                                        <div className="space-y-2">
+                                            <Label className="font-semibold text-foreground">{__('Tipo de Atención *')}</Label>
+                                            <Select2
+                                                options={tipoAtencionSelectOptions}
+                                                value={data.tipo_atencion_id}
+                                                onChange={handleCareTypeChange}
+                                                placeholder={__('Seleccionar tipo de atención...')}
+                                                searchPlaceholder={__('Buscar tipo de atención...')}
+                                            />
+                                            {errors.tipo_atencion_id && <p className="text-xs text-rose-500 font-medium">{errors.tipo_atencion_id}</p>}
+                                        </div>
+                                    </>
+                                )}
+
                                 <div className="space-y-2">
-                                    <Label className="font-semibold text-foreground">{__('Motivo de Consulta / Síntomas')}</Label>
+                                    <Label className="font-semibold text-foreground">
+                                        {data.categoria_cita === 'servicio' ? __('Notas / Observaciones del Estudio') : __('Motivo de Consulta / Síntomas')}
+                                    </Label>
                                     <Textarea
-                                        placeholder={__('Describa brevemente el motivo o síntomas...')}
+                                        placeholder={data.categoria_cita === 'servicio' ? __('Ej: Indicado por médico externo, revisión rutinaria...') : __('Describa brevemente el motivo o síntomas...')}
                                         value={data.motivo_consulta}
                                         onChange={(e) => setData('motivo_consulta', e.target.value)}
                                         className="rounded-2xl min-h-[90px] resize-none"
@@ -1531,8 +1789,17 @@ export default function Index({
                         <DialogHeader className="pb-2 border-b">
                             <div className="flex items-center justify-between pr-4">
                                 <DialogTitle className="text-base font-extrabold flex items-center gap-2">
-                                    <Stethoscope className="size-5 text-indigo-600" />
+                                    {selectedCita.categoria_cita === 'servicio' ? (
+                                        <FlaskConical className="size-5 text-blue-600" />
+                                    ) : (
+                                        <Stethoscope className="size-5 text-indigo-600" />
+                                    )}
                                     <span className="font-mono text-slate-800 dark:text-slate-200">{selectedCita.codigo_cita}</span>
+                                    {selectedCita.categoria_cita === 'servicio' && (
+                                        <Badge className="bg-blue-500/15 text-blue-700 dark:text-blue-300 border border-blue-500/30 text-[10px] font-bold">
+                                            {__('Servicio / Lab')}
+                                        </Badge>
+                                    )}
                                 </DialogTitle>
                                 <Badge className={cn("text-xs font-bold px-3 py-1 rounded-xl shadow-xs", getBadgeVariant(selectedCita.estado))}>
                                     {selectedCita.estado_formateado}
@@ -1541,7 +1808,7 @@ export default function Index({
                         </DialogHeader>
 
                         <div className="space-y-5 py-2">
-                            {/* Datos del Paciente y Médico en Tarjetas Elegantes */}
+                            {/* Datos del Paciente y Médico/Servicio en Tarjetas Elegantes */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="p-3.5 bg-slate-50 dark:bg-slate-900/60 rounded-2xl border flex items-start gap-3">
                                     <div className="size-10 rounded-2xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center shrink-0 font-extrabold text-sm">
@@ -1561,16 +1828,22 @@ export default function Index({
                                 </div>
 
                                 <div className="p-3.5 bg-slate-50 dark:bg-slate-900/60 rounded-2xl border flex items-start gap-3">
-                                    <div className="size-10 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0 font-extrabold text-sm">
-                                        <Stethoscope className="size-5" />
+                                    <div className="size-10 rounded-2xl bg-blue-500/10 text-blue-600 flex items-center justify-center shrink-0 font-extrabold text-sm">
+                                        {selectedCita.categoria_cita === 'servicio' ? <FlaskConical className="size-5" /> : <Stethoscope className="size-5" />}
                                     </div>
                                     <div className="min-w-0 flex-1">
-                                        <span className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground block">{__('Médico Tratante')}</span>
-                                        <span className="font-extrabold text-xs text-foreground block truncate">
-                                            Dr(a). {selectedCita.medico?.nombres} {selectedCita.medico?.apellidos}
+                                        <span className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground block">
+                                            {selectedCita.categoria_cita === 'servicio' ? __('Servicio / Examen') : __('Médico Tratante')}
                                         </span>
-                                        <span className="text-[11px] text-emerald-700 dark:text-emerald-400 font-bold block">
-                                            {selectedCita.especialidad?.nombre || 'Medicina General'}
+                                        <span className="font-extrabold text-xs text-foreground block truncate">
+                                            {selectedCita.categoria_cita === 'servicio'
+                                                ? (selectedCita.catalogo_estudio?.nombre_estudio || selectedCita.motivo_consulta || 'Servicio de Laboratorio')
+                                                : `Dr(a). ${selectedCita.medico?.nombres || 'No asignado'} ${selectedCita.medico?.apellidos || ''}`}
+                                        </span>
+                                        <span className="text-[11px] text-blue-700 dark:text-blue-400 font-bold block">
+                                            {selectedCita.categoria_cita === 'servicio'
+                                                ? (selectedCita.catalogo_estudio?.categoria || 'Laboratorio Clínico')
+                                                : (selectedCita.especialidad?.nombre || 'Medicina General')}
                                         </span>
                                     </div>
                                 </div>
@@ -1639,7 +1912,9 @@ export default function Index({
 
                                 {selectedCita.motivo_consulta && (
                                     <div className="space-y-1">
-                                        <span className="text-[11px] font-bold text-slate-500 block">{__('Motivo de Consulta:')}</span>
+                                        <span className="text-[11px] font-bold text-slate-500 block">
+                                            {selectedCita.categoria_cita === 'servicio' ? __('Observaciones / Notas:') : __('Motivo de Consulta:')}
+                                        </span>
                                         <p className="text-xs font-medium bg-background p-3 rounded-2xl border text-slate-800 dark:text-slate-200">
                                             {selectedCita.motivo_consulta}
                                         </p>
@@ -1647,125 +1922,285 @@ export default function Index({
                                 )}
                             </div>
 
-                            {/* FLUJO CLÍNICO - STEPPER VISUAL INTERACTIVO */}
-                            <div className="bg-slate-50 dark:bg-slate-900/60 p-4 rounded-2xl border space-y-3">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-                                        {__('Flujo Clínico (Progreso de la Cita)')}
-                                    </span>
-                                    <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 px-2.5 py-0.5 rounded-full border border-indigo-200 dark:border-indigo-800">
-                                        {selectedCita.estado_formateado}
-                                    </span>
+                            {/* ─── VISTA ESPECIAL PARA SERVICIOS / LABORATORIO ─── */}
+                            {selectedCita.categoria_cita === 'servicio' ? (
+                                <div className="space-y-4">
+                                    {/* Stepper de Servicio */}
+                                    <div className="bg-slate-50 dark:bg-slate-900/60 p-4 rounded-2xl border space-y-3">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                                                <FlaskConical className="size-3.5 text-blue-600" />
+                                                {__('Progreso del Servicio')}
+                                            </span>
+                                            <Badge variant="outline" className="text-[10px] font-bold text-blue-600 border-blue-300">
+                                                {selectedCita.estado_servicio === 'resultados_listos' ? __('Resultados Listos') :
+                                                 selectedCita.estado_servicio === 'en_proceso' ? __('En Proceso / Análisis') :
+                                                 selectedCita.estado_servicio === 'entregado' ? __('Entregado al Paciente') : __('Pendiente de Muestra')}
+                                            </Badge>
+                                        </div>
+
+                                        <div className="grid grid-cols-4 gap-1.5 pt-1">
+                                            {[
+                                                { key: 'pendiente_muestra', label: '1. Toma Muestra', color: 'bg-amber-500' },
+                                                { key: 'en_proceso', label: '2. En Análisis', color: 'bg-blue-500' },
+                                                { key: 'resultados_listos', label: '3. Resultados Listos', color: 'bg-purple-500' },
+                                                { key: 'entregado', label: '4. Entregado', color: 'bg-emerald-500' },
+                                            ].map((st, idx) => {
+                                                const serviceSteps = ['pendiente_muestra', 'en_proceso', 'resultados_listos', 'entregado'];
+                                                const currentIdx = serviceSteps.indexOf(selectedCita.estado_servicio || 'pendiente_muestra');
+                                                const isCurrent = (selectedCita.estado_servicio || 'pendiente_muestra') === st.key;
+                                                const isPassed = currentIdx > idx;
+
+                                                return (
+                                                    <button
+                                                        key={st.key}
+                                                        type="button"
+                                                        onClick={() => handleUpdateEstadoServicio(selectedCita, st.key)}
+                                                        className={cn(
+                                                            "p-2 rounded-xl text-center border transition-all cursor-pointer flex flex-col items-center justify-center space-y-1",
+                                                            isCurrent && "bg-white dark:bg-slate-800 border-blue-500 ring-2 ring-blue-500/20 shadow-xs scale-105",
+                                                            isPassed && "bg-slate-100 dark:bg-slate-800/40 border-slate-200 dark:border-slate-800 opacity-85",
+                                                            !isCurrent && !isPassed && "bg-background border-dashed opacity-60 hover:opacity-100"
+                                                        )}
+                                                    >
+                                                        <div className={cn("size-2.5 rounded-full", isCurrent || isPassed ? st.color : "bg-slate-300")} />
+                                                        <span className={cn("text-[10px] font-bold block truncate w-full", isCurrent ? "text-blue-600 dark:text-blue-400" : "text-slate-600")}>
+                                                            {st.label}
+                                                        </span>
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+
+                                    {/* Panel de Carga y Gestión de Archivos de Resultados */}
+                                    <div className="bg-card rounded-2xl border p-4 space-y-3">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-xs font-extrabold text-foreground flex items-center gap-2">
+                                                <FileText className="size-4 text-indigo-600" />
+                                                {__('Informes y Archivos de Resultados')} ({selectedCita.archivos_resultados?.length || 0})
+                                            </span>
+                                            {selectedCita.archivos_resultados && selectedCita.archivos_resultados.length > 0 && (
+                                                <Button
+                                                    type="button"
+                                                    size="sm"
+                                                    onClick={() => handleSendResultadosWhatsApp(selectedCita)}
+                                                    className="h-8 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs gap-1.5 shadow-xs"
+                                                >
+                                                    <Send className="size-3.5" />
+                                                    {__('Enviar al WhatsApp del Paciente')}
+                                                </Button>
+                                            )}
+                                        </div>
+
+                                        {/* Lista de archivos adjuntos */}
+                                        {selectedCita.archivos_resultados && selectedCita.archivos_resultados.length > 0 ? (
+                                            <div className="space-y-2">
+                                                {selectedCita.archivos_resultados.map((arch) => (
+                                                    <div key={arch.id} className="p-3 bg-muted/30 rounded-xl border flex items-center justify-between gap-2 text-xs">
+                                                        <div className="flex items-center gap-2.5 min-w-0">
+                                                            <div className="size-8 rounded-lg bg-indigo-500/10 text-indigo-600 flex items-center justify-center shrink-0 font-bold text-xs">
+                                                                {arch.es_pdf ? 'PDF' : arch.es_imagen ? 'IMG' : 'DOC'}
+                                                            </div>
+                                                            <div className="min-w-0">
+                                                                <a
+                                                                    href={arch.url_descarga}
+                                                                    target="_blank"
+                                                                    rel="noreferrer"
+                                                                    className="font-bold text-foreground hover:text-primary truncate block hover:underline"
+                                                                >
+                                                                    {arch.nombre_original}
+                                                                </a>
+                                                                <span className="text-[10px] text-muted-foreground">
+                                                                    {arch.tamano_formateado} • {new Date(arch.created_at).toLocaleDateString()}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="flex items-center gap-1 shrink-0">
+                                                            <a
+                                                                href={arch.url_descarga}
+                                                                target="_blank"
+                                                                rel="noreferrer"
+                                                                className="size-8 rounded-lg bg-muted flex items-center justify-center hover:bg-indigo-50 dark:hover:bg-indigo-950 text-indigo-600"
+                                                                title={__('Ver / Descargar')}
+                                                            >
+                                                                <Download className="size-3.5" />
+                                                            </a>
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                onClick={() => handleDeleteResultado(arch.id)}
+                                                                className="size-8 rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950"
+                                                                title={__('Eliminar')}
+                                                            >
+                                                                <Trash2 className="size-3.5" />
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <div className="text-center py-4 bg-muted/20 border border-dashed rounded-xl text-muted-foreground text-xs">
+                                                <Paperclip className="size-6 mx-auto mb-1 opacity-40" />
+                                                <p className="font-semibold">{__('Aún no se han adjuntado resultados.')}</p>
+                                            </div>
+                                        )}
+
+                                        {/* Formulario de Carga Rápida */}
+                                        <form onSubmit={handleUploadFile} className="pt-2 border-t space-y-2">
+                                            <div className="flex flex-col sm:flex-row gap-2 items-center">
+                                                <Input
+                                                    type="file"
+                                                    accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx"
+                                                    onChange={(e) => setUploadingFile(e.target.files?.[0] || null)}
+                                                    className="text-xs h-9 rounded-xl file:mr-3 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary"
+                                                />
+                                                <Button
+                                                    type="submit"
+                                                    size="sm"
+                                                    disabled={!uploadingFile || isUploading}
+                                                    className="h-9 px-4 rounded-xl font-bold bg-primary text-white shrink-0 gap-1.5"
+                                                >
+                                                    <Upload className="size-3.5" />
+                                                    {isUploading ? __('Subiendo...') : __('Subir Resultado')}
+                                                </Button>
+                                            </div>
+                                            {uploadingFile && (
+                                                <Input
+                                                    type="text"
+                                                    placeholder={__('Nota u observación técnica adicional (opcional)...')}
+                                                    value={uploadNotas}
+                                                    onChange={(e) => setUploadNotas(e.target.value)}
+                                                    className="text-xs h-8 rounded-xl"
+                                                />
+                                            )}
+                                        </form>
+                                    </div>
                                 </div>
+                            ) : (
+                                /* ─── VISTA CLÍNICA PARA CONSULTAS MÉDICAS ─── */
+                                <div className="space-y-4">
+                                    {/* FLUJO CLÍNICO - STEPPER VISUAL INTERACTIVO */}
+                                    <div className="bg-slate-50 dark:bg-slate-900/60 p-4 rounded-2xl border space-y-3">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                                                {__('Flujo Clínico (Progreso de la Cita)')}
+                                            </span>
+                                            <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 px-2.5 py-0.5 rounded-full border border-indigo-200 dark:border-indigo-800">
+                                                {selectedCita.estado_formateado}
+                                            </span>
+                                        </div>
 
-                                <div className="grid grid-cols-5 gap-1.5 pt-1">
-                                    {[
-                                        { key: 'pendiente', label: 'Pendiente', color: 'bg-amber-500' },
-                                        { key: 'confirmada_pagada', label: 'Confirmada', color: 'bg-emerald-500' },
-                                        { key: 'en_sala_espera', label: 'Recepción', color: 'bg-blue-500' },
-                                        { key: 'en_consulta', label: 'En Consulta', color: 'bg-purple-500' },
-                                        { key: 'atendida', label: 'Atendida', color: 'bg-teal-500' },
-                                    ].map((step, idx) => {
-                                        const currentIdx = ['pendiente', 'confirmada_pagada', 'en_sala_espera', 'en_consulta', 'atendida'].indexOf(selectedCita.estado);
-                                        const isCurrent = selectedCita.estado === step.key;
-                                        const isPassed = currentIdx > idx;
+                                        <div className="grid grid-cols-5 gap-1.5 pt-1">
+                                            {[
+                                                { key: 'pendiente', label: 'Pendiente', color: 'bg-amber-500' },
+                                                { key: 'confirmada_pagada', label: 'Confirmada', color: 'bg-emerald-500' },
+                                                { key: 'en_sala_espera', label: 'Recepción', color: 'bg-blue-500' },
+                                                { key: 'en_consulta', label: 'En Consulta', color: 'bg-purple-500' },
+                                                { key: 'atendida', label: 'Atendida', color: 'bg-teal-500' },
+                                            ].map((step, idx) => {
+                                                const currentIdx = ['pendiente', 'confirmada_pagada', 'en_sala_espera', 'en_consulta', 'atendida'].indexOf(selectedCita.estado);
+                                                const isCurrent = selectedCita.estado === step.key;
+                                                const isPassed = currentIdx > idx;
 
-                                        return (
-                                            <button
-                                                key={step.key}
+                                                return (
+                                                    <button
+                                                        key={step.key}
+                                                        type="button"
+                                                        onClick={() => handleQuickStateChange(selectedCita, step.key)}
+                                                        className={cn(
+                                                            "p-2 rounded-xl text-center border transition-all cursor-pointer flex flex-col items-center justify-center space-y-1.5",
+                                                            isCurrent && "bg-white dark:bg-slate-800 border-indigo-500 ring-2 ring-indigo-500/20 shadow-xs scale-105",
+                                                            isPassed && "bg-slate-100 dark:bg-slate-800/40 border-slate-200 dark:border-slate-800 opacity-85",
+                                                            !isCurrent && !isPassed && "bg-background border-dashed opacity-60 hover:opacity-100 hover:border-solid"
+                                                        )}
+                                                    >
+                                                        <div className={cn("size-3 rounded-full transition-transform", isCurrent || isPassed ? step.color : "bg-slate-300")} />
+                                                        <span className={cn("text-[10px] font-bold block truncate w-full", isCurrent ? "text-indigo-600 dark:text-indigo-400" : "text-slate-600 dark:text-slate-400")}>
+                                                            {step.label}
+                                                        </span>
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+
+                                    {/* HERO ACTION BUTTON & ACCIONES RÁPIDAS */}
+                                    <div className="space-y-3 pt-1">
+                                        {/* Botón Acción Principal Destacado (Exclusivo para Médicos y Personal Clínico) */}
+                                        {canAtenderConsulta && (
+                                            <Button
                                                 type="button"
-                                                onClick={() => handleQuickStateChange(selectedCita, step.key)}
-                                                className={cn(
-                                                    "p-2 rounded-xl text-center border transition-all cursor-pointer flex flex-col items-center justify-center space-y-1.5",
-                                                    isCurrent && "bg-white dark:bg-slate-800 border-indigo-500 ring-2 ring-indigo-500/20 shadow-xs scale-105",
-                                                    isPassed && "bg-slate-100 dark:bg-slate-800/40 border-slate-200 dark:border-slate-800 opacity-85",
-                                                    !isCurrent && !isPassed && "bg-background border-dashed opacity-60 hover:opacity-100 hover:border-solid"
-                                                )}
+                                                onClick={() => router.get(`/admin/citas/${selectedCita.id}/atencion`)}
+                                                className="w-full h-12 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-extrabold text-xs shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2 transition-all transform active:scale-98"
                                             >
-                                                <div className={cn("size-3 rounded-full transition-transform", isCurrent || isPassed ? step.color : "bg-slate-300")} />
-                                                <span className={cn("text-[10px] font-bold block truncate w-full", isCurrent ? "text-indigo-600 dark:text-indigo-400" : "text-slate-600 dark:text-slate-400")}>
-                                                    {step.label}
-                                                </span>
-                                            </button>
-                                        );
-                                    })}
+                                                <Stethoscope className="size-4" />
+                                                {__('ATENDER CONSULTA MÉDICA (WIZARD DE ATENCIÓN)')}
+                                                <ArrowRight className="size-4 ml-1" />
+                                            </Button>
+                                        )}
+
+                                        {/* Barra de Herramientas Secundarias */}
+                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                            <Select
+                                                value={selectedCita.estado}
+                                                onValueChange={(val) => handleQuickStateChange(selectedCita, val)}
+                                            >
+                                                <SelectTrigger className="h-10 text-xs font-bold rounded-xl border bg-background w-full">
+                                                    <SelectValue placeholder={__('Cambiar Estado...')} />
+                                                </SelectTrigger>
+                                                <SelectContent className="rounded-2xl">
+                                                    <SelectItem value="pendiente" className="text-xs font-bold">🟡 Pendiente por Confirmar</SelectItem>
+                                                    <SelectItem value="confirmada_pagada" className="text-xs font-bold">🟢 Cita Confirmada</SelectItem>
+                                                    <SelectItem value="en_sala_espera" className="text-xs font-bold">🔵 Llegó a Recepción</SelectItem>
+                                                    <SelectItem value="en_consulta" className="text-xs font-bold">🟣 En Consultorio</SelectItem>
+                                                    <SelectItem value="atendida" className="text-xs font-bold">🟠 Atendida / Finalizada</SelectItem>
+                                                    <SelectItem value="cancelada" className="text-xs font-bold text-rose-600">🔴 Cancelar Cita</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+
+                                            {/* Cuestionario Pre-Consulta */}
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={async () => {
+                                                    try {
+                                                        const res = await fetch(`/admin/citas/${selectedCita.id}/generar-preconsulta`, {
+                                                            method: 'POST',
+                                                            headers: {
+                                                                'Content-Type': 'application/json',
+                                                                'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') as any)?.content || '',
+                                                            },
+                                                        });
+                                                        const data = await res.json();
+                                                        if (data.url) {
+                                                            navigator.clipboard.writeText(data.url);
+                                                            notifySuccess(__('¡Link de Pre-Consulta copiado al portapapeles!'));
+                                                            window.open(data.url, '_blank');
+                                                        }
+                                                    } catch (err) {
+                                                        notifyError(__('No se pudo generar el enlace de preconsulta.'));
+                                                    }
+                                                }}
+                                                className="h-10 border-emerald-600/40 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-600/10 rounded-xl font-bold text-xs gap-1.5"
+                                            >
+                                                📋 {__('Pre-Consulta')}
+                                            </Button>
+
+                                            {/* Recordatorio WhatsApp */}
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => handleSendWhatsApp(selectedCita)}
+                                                className="h-10 border-green-600/40 text-green-700 dark:text-green-400 hover:bg-green-600/10 rounded-xl font-bold text-xs gap-1.5"
+                                            >
+                                                📱 {__('WhatsApp')}
+                                            </Button>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-
-                            {/* HERO ACTION BUTTON & ACCIONES RÁPIDAS */}
-                            <div className="space-y-3 pt-1">
-                                {/* Botón Acción Principal Destacado (Exclusivo para Médicos y Personal Clínico) */}
-                                {canAtenderConsulta && (
-                                    <Button
-                                        type="button"
-                                        onClick={() => router.get(`/admin/citas/${selectedCita.id}/atencion`)}
-                                        className="w-full h-12 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-extrabold text-xs shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2 transition-all transform active:scale-98"
-                                    >
-                                        <Stethoscope className="size-4" />
-                                        {__('ATENDER CONSULTA MÉDICA (WIZARD DE ATENCIÓN)')}
-                                        <ArrowRight className="size-4 ml-1" />
-                                    </Button>
-                                )}
-
-                                {/* Barra de Herramientas Secundarias */}
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                                    {/* Select para cambio de estado rápido */}
-                                    <Select
-                                        value={selectedCita.estado}
-                                        onValueChange={(val) => handleQuickStateChange(selectedCita, val)}
-                                    >
-                                        <SelectTrigger className="h-10 text-xs font-bold rounded-xl border bg-background w-full">
-                                            <SelectValue placeholder={__('Cambiar Estado...')} />
-                                        </SelectTrigger>
-                                        <SelectContent className="rounded-2xl">
-                                            <SelectItem value="pendiente" className="text-xs font-bold">🟡 Pendiente por Confirmar</SelectItem>
-                                            <SelectItem value="confirmada_pagada" className="text-xs font-bold">🟢 Cita Confirmada</SelectItem>
-                                            <SelectItem value="en_sala_espera" className="text-xs font-bold">🔵 Llegó a Recepción</SelectItem>
-                                            <SelectItem value="en_consulta" className="text-xs font-bold">🟣 En Consultorio</SelectItem>
-                                            <SelectItem value="atendida" className="text-xs font-bold">🟠 Atendida / Finalizada</SelectItem>
-                                            <SelectItem value="cancelada" className="text-xs font-bold text-rose-600">🔴 Cancelar Cita</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-
-                                    {/* Cuestionario Pre-Consulta */}
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={async () => {
-                                            try {
-                                                const res = await fetch(`/admin/citas/${selectedCita.id}/generar-preconsulta`, {
-                                                    method: 'POST',
-                                                    headers: {
-                                                        'Content-Type': 'application/json',
-                                                        'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') as any)?.content || '',
-                                                    },
-                                                });
-                                                const data = await res.json();
-                                                if (data.url) {
-                                                    navigator.clipboard.writeText(data.url);
-                                                    notifySuccess(__('¡Link de Pre-Consulta copiado al portapapeles!'));
-                                                    window.open(data.url, '_blank');
-                                                }
-                                            } catch (err) {
-                                                notifyError(__('No se pudo generar el enlace de preconsulta.'));
-                                            }
-                                        }}
-                                        className="h-10 border-emerald-600/40 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-600/10 rounded-xl font-bold text-xs gap-1.5"
-                                    >
-                                        📋 {__('Pre-Consulta')}
-                                    </Button>
-
-                                    {/* Recordatorio WhatsApp */}
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => handleSendWhatsApp(selectedCita)}
-                                        className="h-10 border-green-600/40 text-green-700 dark:text-green-400 hover:bg-green-600/10 rounded-xl font-bold text-xs gap-1.5"
-                                    >
-                                        📱 {__('WhatsApp')}
-                                    </Button>
-                                </div>
-                            </div>
+                            )}
                         </div>
 
                         <DialogFooter className="gap-2 border-t pt-4">

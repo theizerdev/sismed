@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\CatalogoEstudio;
 use App\Models\Cita;
+use App\Models\CitaArchivoResultado;
 use App\Models\Especialidad;
 use App\Models\Medico;
 use App\Models\Paciente;
@@ -14,6 +16,7 @@ use App\Services\WhatsAppService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class CitaController extends Controller
@@ -29,7 +32,7 @@ class CitaController extends Controller
 
     public function index(Request $request)
     {
-        $query = Cita::with(['paciente', 'medico', 'especialidad', 'tipoAtencion', 'sucursal']);
+        $query = Cita::with(['paciente', 'medico', 'especialidad', 'tipoAtencion', 'sucursal', 'catalogoEstudio', 'archivosResultados.subidoPor']);
 
         // Filtros de fecha para calendario y tabla
         if ($request->filled('start_date') && $request->filled('end_date')) {
@@ -71,6 +74,10 @@ class CitaController extends Controller
                   ->orWhereHas('medico', function ($qm) use ($search) {
                       $qm->where('nombres', 'like', "%{$search}%")
                          ->orWhere('apellidos', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('catalogoEstudio', function ($qe) use ($search) {
+                      $qe->where('nombre_estudio', 'like', "%{$search}%")
+                         ->orWhere('codigo', 'like', "%{$search}%");
                   });
             });
         }
@@ -87,21 +94,25 @@ class CitaController extends Controller
 
             $nombreMedico = $cita->medico
                 ? "Dr(a). {$cita->medico->nombres} {$cita->medico->apellidos}"
-                : 'Médico N/A';
+                : ($cita->categoria_cita === 'servicio' ? '🧪 ' . ($cita->catalogoEstudio->nombre_estudio ?? 'Servicio / Lab') : 'Médico N/A');
 
             return [
                 'id' => (string) $cita->id,
                 'title' => "{$nombrePaciente} - {$nombreMedico}",
                 'start' => $cita->fecha_hora_inicio->toIso8601String(),
                 'end' => $cita->fecha_hora_fin->toIso8601String(),
-                'backgroundColor' => $cita->color_estado,
-                'borderColor' => $cita->color_estado,
+                'backgroundColor' => $cita->categoria_cita === 'servicio' ? '#0284c7' : $cita->color_estado,
+                'borderColor' => $cita->categoria_cita === 'servicio' ? '#0369a1' : $cita->color_estado,
                 'textColor' => '#ffffff',
+                'editable' => $cita->estado === 'pendiente' || $cita->estado === 'confirmada_pagada',
                 'extendedProps' => [
                     'cita' => $cita,
                     'codigo_cita' => $cita->codigo_cita,
                     'estado' => $cita->estado,
                     'estado_formateado' => $cita->estado_formateado,
+                    'categoria_cita' => $cita->categoria_cita ?? 'medica',
+                    'catalogo_estudio' => $cita->catalogoEstudio,
+                    'estado_servicio' => $cita->estado_servicio,
                     'paciente_id' => $cita->paciente_id,
                     'paciente_nombre' => $nombrePaciente,
                     'paciente_tipo' => $cita->paciente->tipo_paciente ?? 'humano',
@@ -126,7 +137,7 @@ class CitaController extends Controller
         $hoy = Carbon::today();
         $estadisticas = [
             'citas_hoy' => Cita::whereDate('fecha_hora_inicio', $hoy)->count(),
-            'confirmadas' => Cita::whereDate('fecha_hora_inicio', $hoy)->where('estado', 'confirmada_pagada')->count(),
+            'confirmadas' => Cita::whereDate('fecha_hora_inicio', $hoy)->whereIn('estado', ['confirmada', 'confirmada_pagada'])->count(),
             'en_sala_espera' => Cita::whereDate('fecha_hora_inicio', $hoy)->where('estado', 'en_sala_espera')->count(),
             'en_consulta' => Cita::whereDate('fecha_hora_inicio', $hoy)->where('estado', 'en_consulta')->count(),
             'atendidas' => Cita::whereDate('fecha_hora_inicio', $hoy)->where('estado', 'atendida')->count(),
@@ -139,7 +150,8 @@ class CitaController extends Controller
             'medicos' => Medico::select('id', 'nombres', 'apellidos', 'codigo_medico', 'color_agenda', 'especialidad_principal_id')->where('status', true)->get(),
             'pacientes' => Paciente::select('id', 'codigo_paciente', 'nombres', 'apellidos', 'tipo_paciente', 'nombre_mascota', 'tutor_nombre', 'telefono', 'tutor_telefono', 'fecha_nacimiento')->where('status', true)->get(),
             'especialidades' => Especialidad::select('id', 'nombre')->where('status', true)->get(),
-            'tiposAtencion' => TipoAtencion::select('id', 'nombre', 'duracion_estimada_minutos', 'requiere_link_virtual', 'costo_adicional_sugerido', 'modalidad')->where('status', true)->get(),
+            'tiposAtencion' => TipoAtencion::select('id', 'nombre', 'categoria', 'duracion_estimada_minutos', 'requiere_link_virtual', 'costo_adicional_sugerido', 'modalidad')->where('status', true)->get(),
+            'catalogoServicios' => CatalogoEstudio::where('status', true)->orderBy('categoria')->orderBy('nombre_estudio')->get(),
             'sucursales' => Sucursal::select('id', 'nombre')->get(),
             'paises' => \App\Models\Pais::where('activo', true)->get(['id', 'nombre', 'codigo_iso2', 'codigo_telefonico']),
             'estadisticas' => $estadisticas,
@@ -167,11 +179,15 @@ class CitaController extends Controller
 
     public function store(Request $request)
     {
+        $categoriaCita = $request->input('categoria_cita', 'medica');
+
         $validated = $request->validate([
+            'categoria_cita' => 'nullable|in:medica,servicio',
+            'catalogo_estudio_id' => 'nullable|exists:catalogo_estudios,id',
             'paciente_id' => 'required|exists:pacientes,id',
-            'medico_id' => 'required|exists:medicos,id',
+            'medico_id' => $categoriaCita === 'medica' ? 'required|exists:medicos,id' : 'nullable|exists:medicos,id',
             'especialidad_id' => 'nullable|exists:especialidades,id',
-            'tipo_atencion_id' => 'required|exists:tipos_atencion,id',
+            'tipo_atencion_id' => 'nullable|exists:tipos_atencion,id',
             'sucursal_id' => 'nullable|exists:sucursales,id',
             'fecha_hora_inicio' => 'required|date',
             'duracion_minutos' => 'nullable|integer|min:5',
@@ -180,8 +196,13 @@ class CitaController extends Controller
             'monto_estimado' => 'nullable|numeric|min:0',
         ]);
 
-        $tipoAtencion = TipoAtencion::findOrFail($validated['tipo_atencion_id']);
-        $duracion = $validated['duracion_minutos'] ?? $tipoAtencion->duracion_estimada_minutos ?? 30;
+        $tipoAtencion = !empty($validated['tipo_atencion_id']) ? TipoAtencion::find($validated['tipo_atencion_id']) : null;
+        $estudio = !empty($validated['catalogo_estudio_id']) ? CatalogoEstudio::find($validated['catalogo_estudio_id']) : null;
+
+        $duracion = $validated['duracion_minutos']
+            ?? $tipoAtencion->duracion_estimada_minutos
+            ?? $estudio->duracion_minutos
+            ?? 30;
 
         $inicio = Carbon::parse($validated['fecha_hora_inicio']);
         $fin = $inicio->copy()->addMinutes($duracion);
@@ -189,43 +210,61 @@ class CitaController extends Controller
         // 1. Validar Anticipación Mínima (2 horas)
         $this->citaService->validarAnticipacionMinima($inicio);
 
-        // 2. Validar Overbooking / Solapamiento
-        $this->citaService->validarOverbooking((int) $validated['medico_id'], $inicio, $fin);
+        // 2. Validar Overbooking solo si hay un médico asignado
+        if (!empty($validated['medico_id'])) {
+            $this->citaService->validarOverbooking((int) $validated['medico_id'], $inicio, $fin);
+        }
 
         // 3. Generar enlace virtual si corresponde
-        $linkVirtual = $this->citaService->generarLinkVirtual($tipoAtencion);
+        $linkVirtual = $tipoAtencion ? $this->citaService->generarLinkVirtual($tipoAtencion) : null;
+
+        $montoEstimado = $validated['monto_estimado']
+            ?? $estudio->precio
+            ?? $tipoAtencion->costo_adicional_sugerido
+            ?? 0.00;
 
         $cita = Cita::create([
+            'categoria_cita' => $categoriaCita,
+            'catalogo_estudio_id' => $validated['catalogo_estudio_id'] ?? null,
             'paciente_id' => $validated['paciente_id'],
-            'medico_id' => $validated['medico_id'],
+            'medico_id' => $validated['medico_id'] ?? null,
             'especialidad_id' => $validated['especialidad_id'] ?? null,
-            'tipo_atencion_id' => $validated['tipo_atencion_id'],
+            'tipo_atencion_id' => $validated['tipo_atencion_id'] ?? null,
             'sucursal_id' => $validated['sucursal_id'] ?? null,
             'fecha_hora_inicio' => $inicio,
             'fecha_hora_fin' => $fin,
             'duracion_minutos' => $duracion,
             'buffer_descanso_minutos' => 10,
             'estado' => 'pendiente',
-            'motivo_consulta' => $validated['motivo_consulta'] ?? null,
+            'estado_servicio' => 'pendiente_muestra',
+            'motivo_consulta' => $validated['motivo_consulta'] ?? ($estudio ? $estudio->nombre_estudio : null),
             'notas_recepcion' => $validated['notas_recepcion'] ?? null,
             'link_virtual' => $linkVirtual,
-            'monto_estimado' => $validated['monto_estimado'] ?? $tipoAtencion->costo_adicional_sugerido ?? 0.00,
+            'monto_estimado' => $montoEstimado,
             'created_by' => Auth::id(),
         ]);
 
         // Enviar notificaciones WhatsApp automáticas al Paciente y al Doctor
         $this->enviarNotificacionesWhatsAppNuevaCita($cita);
 
-        return back()->with('success', 'Cita médica registrada con éxito. Código: ' . $cita->codigo_cita);
+        $mensajeExito = $categoriaCita === 'servicio'
+            ? 'Cita de servicio agendada con éxito. Código: ' . $cita->codigo_cita
+            : 'Cita médica registrada con éxito. Código: ' . $cita->codigo_cita;
+
+        return back()->with('success', $mensajeExito);
     }
 
     public function update(Request $request, Cita $cita)
     {
+        $categoriaCita = $request->input('categoria_cita', $cita->categoria_cita ?? 'medica');
+
         $validated = $request->validate([
+            'categoria_cita' => 'nullable|in:medica,servicio',
+            'catalogo_estudio_id' => 'nullable|exists:catalogo_estudios,id',
             'paciente_id' => 'required|exists:pacientes,id',
-            'medico_id' => 'required|exists:medicos,id',
+            'medico_id' => $categoriaCita === 'medica' ? 'required|exists:medicos,id' : 'nullable|exists:medicos,id',
             'especialidad_id' => 'nullable|exists:especialidades,id',
-            'tipo_atencion_id' => 'required|exists:tipos_atencion,id',
+            'tipo_atencion_id' => 'nullable|exists:tipos_atencion,id',
             'sucursal_id' => 'nullable|exists:sucursales,id',
             'fecha_hora_inicio' => 'required|date',
             'duracion_minutos' => 'nullable|integer|min:5',
@@ -241,14 +280,18 @@ class CitaController extends Controller
         // Si se cambia la fecha u hora, verificar regla de cancelación/reagendamiento <24h y overbooking
         if (!$cita->fecha_hora_inicio->eq($inicioNuevo)) {
             $this->citaService->validarLimiteCancelacion($cita);
-            $this->citaService->validarOverbooking((int) $validated['medico_id'], $inicioNuevo, $finNuevo, $cita->id);
+            if (!empty($validated['medico_id'])) {
+                $this->citaService->validarOverbooking((int) $validated['medico_id'], $inicioNuevo, $finNuevo, $cita->id);
+            }
         }
 
         $cita->update([
+            'categoria_cita' => $categoriaCita,
+            'catalogo_estudio_id' => $validated['catalogo_estudio_id'] ?? $cita->catalogo_estudio_id,
             'paciente_id' => $validated['paciente_id'],
-            'medico_id' => $validated['medico_id'],
+            'medico_id' => $validated['medico_id'] ?? null,
             'especialidad_id' => $validated['especialidad_id'] ?? null,
-            'tipo_atencion_id' => $validated['tipo_atencion_id'],
+            'tipo_atencion_id' => $validated['tipo_atencion_id'] ?? $cita->tipo_atencion_id,
             'sucursal_id' => $validated['sucursal_id'] ?? null,
             'fecha_hora_inicio' => $inicioNuevo,
             'fecha_hora_fin' => $finNuevo,
@@ -258,7 +301,7 @@ class CitaController extends Controller
             'monto_estimado' => $validated['monto_estimado'] ?? $cita->monto_estimado,
         ]);
 
-        return back()->with('success', 'Cita médica actualizada correctamente.');
+        return back()->with('success', 'Cita actualizada correctamente.');
     }
 
     public function move(Request $request, Cita $cita)
@@ -538,5 +581,124 @@ class CitaController extends Controller
         } catch (\Exception $e) {
             Log::error('Error enviando notificaciones de creación de cita por WhatsApp: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Sube un archivo de resultados (PDF / Imagen) para una cita de servicio.
+     */
+    public function uploadResultado(Request $request, Cita $cita)
+    {
+        $request->validate([
+            'archivo' => 'required|file|mimes:pdf,jpg,jpeg,png,webp,doc,docx|max:20480', // Máx 20MB
+            'notas' => 'nullable|string|max:500',
+        ]);
+
+        $file = $request->file('archivo');
+        $originalName = $file->getClientOriginalName();
+        $mimeType = $file->getClientMimeType();
+        $size = $file->getSize();
+
+        $path = $file->store('resultados_citas/' . $cita->empresa_id, 'public');
+
+        $archivoResultado = \App\Models\CitaArchivoResultado::create([
+            'empresa_id' => $cita->empresa_id,
+            'cita_id' => $cita->id,
+            'nombre_original' => $originalName,
+            'archivo_path' => $path,
+            'tamano_bytes' => $size,
+            'mime_type' => $mimeType,
+            'notas' => $request->input('notas'),
+            'subido_por_user_id' => Auth::id(),
+        ]);
+
+        // Si es el primer resultado, actualizar automáticamente el estado del servicio
+        if ($cita->estado_servicio === 'pendiente_muestra' || $cita->estado_servicio === 'en_proceso') {
+            $cita->update(['estado_servicio' => 'resultados_listos']);
+        }
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Archivo de resultado subido correctamente.',
+                'archivo' => $archivoResultado->load('subidoPor'),
+            ]);
+        }
+
+        return back()->with('success', 'Archivo de resultado subido correctamente.');
+    }
+
+    /**
+     * Elimina un archivo de resultado adjunto.
+     */
+    public function deleteResultado(\App\Models\CitaArchivoResultado $archivo)
+    {
+        if ($archivo->archivo_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($archivo->archivo_path)) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($archivo->archivo_path);
+        }
+
+        $archivo->delete();
+
+        return back()->with('success', 'Archivo de resultado eliminado.');
+    }
+
+    /**
+     * Actualiza el estado técnico del servicio (Toma de muestra, análisis, listo).
+     */
+    public function updateEstadoServicio(Request $request, Cita $cita)
+    {
+        $validated = $request->validate([
+            'estado_servicio' => 'required|in:pendiente_muestra,en_proceso,resultados_listos,entregado',
+        ]);
+
+        $cita->update([
+            'estado_servicio' => $validated['estado_servicio'],
+        ]);
+
+        return back()->with('success', 'Estado del servicio actualizado.');
+    }
+
+    /**
+     * Envía los resultados del estudio o laboratorio al paciente vía WhatsApp.
+     */
+    public function sendResultadosWhatsApp(Cita $cita)
+    {
+        $paciente = $cita->paciente;
+        $telefono = $paciente->telefono ?? $paciente->tutor_telefono;
+
+        if (!$telefono) {
+            return back()->with('error', 'El paciente no tiene un número de teléfono registrado.');
+        }
+
+        $archivos = $cita->archivosResultados;
+        if ($archivos->isEmpty()) {
+            return back()->with('error', 'No hay archivos de resultados adjuntos para enviar.');
+        }
+
+        $nombrePaciente = $paciente->tipo_paciente === 'animal'
+            ? "🐾 {$paciente->nombre_mascota} (Tutor: {$paciente->tutor_nombre})"
+            : "{$paciente->nombres}";
+
+        $nombreEstudio = $cita->catalogoEstudio->nombre_estudio ?? $cita->motivo_consulta ?? 'Servicio / Estudio';
+
+        $mensaje = "🧪 *RESULTADOS DISPONIBLES - SISMED*\n\n"
+            . "Estimado(a) *{$nombrePaciente}*,\n"
+            . "Le informamos que los resultados de su estudio *{$nombreEstudio}* ya se encuentran listos para su descarga:\n\n";
+
+        foreach ($archivos as $idx => $arch) {
+            $num = $idx + 1;
+            $mensaje .= "📄 *Resultado {$num}:* {$arch->nombre_original}\n"
+                . "👉 {$arch->url_descarga}\n\n";
+        }
+
+        $mensaje .= "📌 *Código de Cita:* {$cita->codigo_cita}\n"
+            . "Cualquier duda, estamos a su disposición. ¡Gracias por su confianza!";
+
+        $this->whatsAppService->sendMessage($telefono, $mensaje);
+
+        $cita->update([
+            'estado_servicio' => 'entregado',
+        ]);
+
+        return back()->with('success', 'Resultados enviados exitosamente por WhatsApp al paciente.');
     }
 }

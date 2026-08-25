@@ -51,7 +51,7 @@ return new class extends Migration
 
             // Relaciones principales
             $table->foreignId('paciente_id')->constrained('pacientes')->onDelete('cascade');
-            $table->foreignId('medico_id')->constrained('medicos')->onDelete('cascade');
+            $table->foreignId('medico_id')->nullable()->constrained('medicos')->onDelete('cascade');
             $table->foreignId('especialidad_id')->nullable()->constrained('especialidades')->onDelete('set null');
             $table->foreignId('tipo_atencion_id')->nullable()->constrained('tipos_atencion')->onDelete('set null');
 
