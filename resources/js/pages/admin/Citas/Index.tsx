@@ -654,7 +654,10 @@ export default function Index({
         tipo_atencion_id: '',
         sucursal_id: '',
         fecha_reserva: new Date().toISOString().substring(0, 10),
+        hora_inicio: '',
+        hora_fin: '',
         fecha_hora_inicio: '',
+        fecha_hora_fin: '',
         duracion_minutos: 30,
         motivo_consulta: '',
         notas_recepcion: '',
@@ -796,30 +799,109 @@ export default function Index({
         setSelectedSlotInicio('');
     };
 
+    // ── Time Helpers ─────────────────────────────────────────────────────────
+    const addMinutesToTime = (timeStr: string, minutes: number): string => {
+        if (!timeStr || !timeStr.includes(':')) return '';
+        const [h, m] = timeStr.split(':').map(Number);
+        if (isNaN(h) || isNaN(m)) return '';
+        const date = new Date(2000, 0, 1, h, m);
+        date.setMinutes(date.getMinutes() + minutes);
+        const rh = date.getHours().toString().padStart(2, '0');
+        const rm = date.getMinutes().toString().padStart(2, '0');
+        return `${rh}:${rm}`;
+    };
+
+    const getDiffMinutes = (startStr: string, endStr: string): number => {
+        if (!startStr || !endStr || !startStr.includes(':') || !endStr.includes(':')) return 30;
+        const [sh, sm] = startStr.split(':').map(Number);
+        const [eh, em] = endStr.split(':').map(Number);
+        if (isNaN(sh) || isNaN(sm) || isNaN(eh) || isNaN(em)) return 30;
+        const sDate = new Date(2000, 0, 1, sh, sm);
+        const eDate = new Date(2000, 0, 1, eh, em);
+        const diff = Math.round((eDate.getTime() - sDate.getTime()) / 60000);
+        return diff > 0 ? diff : 30;
+    };
+
+    const handleFechaReservaChange = (fecha: string) => {
+        setData((prev) => ({
+            ...prev,
+            fecha_reserva: fecha,
+            fecha_hora_inicio: prev.hora_inicio ? `${fecha}T${prev.hora_inicio}:00` : '',
+            fecha_hora_fin: prev.hora_fin ? `${fecha}T${prev.hora_fin}:00` : '',
+        }));
+    };
+
+    const handleHoraInicioChange = (hora: string) => {
+        const hFin = hora ? addMinutesToTime(hora, data.duracion_minutos || 30) : '';
+        setData((prev) => ({
+            ...prev,
+            hora_inicio: hora,
+            hora_fin: hFin || prev.hora_fin,
+            fecha_hora_inicio: hora ? `${prev.fecha_reserva}T${hora}:00` : '',
+            fecha_hora_fin: hFin ? `${prev.fecha_reserva}T${hFin}:00` : prev.fecha_hora_fin,
+        }));
+        setSelectedSlotInicio(hora ? `${data.fecha_reserva}T${hora}:00` : '');
+    };
+
+    const handleHoraFinChange = (hora: string) => {
+        const diff = data.hora_inicio ? getDiffMinutes(data.hora_inicio, hora) : (data.duracion_minutos || 30);
+        setData((prev) => ({
+            ...prev,
+            hora_fin: hora,
+            duracion_minutos: diff,
+            fecha_hora_fin: hora ? `${prev.fecha_reserva}T${hora}:00` : '',
+        }));
+    };
+
+    const handleDuracionManualChange = (minutos: number) => {
+        const safeMin = Math.max(5, minutos);
+        const hFin = data.hora_inicio ? addMinutesToTime(data.hora_inicio, safeMin) : data.hora_fin;
+        setData((prev) => ({
+            ...prev,
+            duracion_minutos: safeMin,
+            hora_fin: hFin,
+            fecha_hora_fin: hFin ? `${prev.fecha_reserva}T${hFin}:00` : prev.fecha_hora_fin,
+        }));
+    };
+
+    const handleSelectSlot = (slot: SlotDisponibilidad) => {
+        const hIni = slot.inicio.includes('T') ? slot.inicio.substring(11, 16) : '';
+        const hFin = slot.fin.includes('T') ? slot.fin.substring(11, 16) : '';
+        const diff = getDiffMinutes(hIni, hFin);
+        setSelectedSlotInicio(slot.inicio);
+        setData((prev) => ({
+            ...prev,
+            hora_inicio: hIni,
+            hora_fin: hFin,
+            fecha_hora_inicio: slot.inicio,
+            fecha_hora_fin: slot.fin,
+            duracion_minutos: diff,
+        }));
+    };
+
     const handleDoctorChange = (medicoId: string) => {
         const doc = medicos.find((m) => m.id.toString() === medicoId);
         setData((prev) => ({
             ...prev,
             medico_id: medicoId,
             especialidad_id: doc?.especialidad_principal_id ? doc.especialidad_principal_id.toString() : prev.especialidad_id,
-            fecha_hora_inicio: '',
         }));
-        setSelectedSlotInicio('');
     };
 
     const handleCareTypeChange = (tipoId: string) => {
         const tipo = tiposAtencion.find((t) => t.id.toString() === tipoId);
         const duracion = tipo?.duracion_estimada_minutos || 30;
         const costo = tipo?.costo_adicional_sugerido ? tipo.costo_adicional_sugerido.toString() : '';
+        const hFin = data.hora_inicio ? addMinutesToTime(data.hora_inicio, duracion) : data.hora_fin;
 
         setData((prev) => ({
             ...prev,
             tipo_atencion_id: tipoId,
             duracion_minutos: duracion,
             monto_estimado: costo,
-            fecha_hora_inicio: '',
+            hora_fin: hFin,
+            fecha_hora_fin: hFin ? `${prev.fecha_reserva}T${hFin}:00` : prev.fecha_hora_fin,
         }));
-        setSelectedSlotInicio('');
     };
 
     const handleClearFilters = () => {
@@ -846,6 +928,10 @@ export default function Index({
             ? slotTime.substring(0, 10)
             : currentDate.toISOString().substring(0, 10);
 
+        const initialHoraInicio = slotTime && slotTime.includes('T') ? slotTime.substring(11, 16) : '';
+        const initialHoraFin = initialHoraInicio ? addMinutesToTime(initialHoraInicio, duracionMin) : '';
+        const initialFechaFin = initialHoraFin ? `${initialFecha}T${initialHoraFin}:00` : '';
+
         setData({
             categoria_cita: 'medica',
             catalogo_estudio_id: '',
@@ -855,7 +941,10 @@ export default function Index({
             tipo_atencion_id: defaultTipo,
             sucursal_id: sucursales[0]?.id.toString() || '',
             fecha_reserva: initialFecha,
+            hora_inicio: initialHoraInicio,
+            hora_fin: initialHoraFin,
             fecha_hora_inicio: slotTime || '',
+            fecha_hora_fin: initialFechaFin,
             duracion_minutos: duracionMin || tiposAtencion[0]?.duracion_estimada_minutos || 30,
             motivo_consulta: '',
             notas_recepcion: '',
@@ -1676,85 +1765,117 @@ export default function Index({
                                 </div>
                             </div>
 
-                            {/* Columna Derecha: Selección Dinámica de Fecha y Turnos sin Overbooking */}
+                            {/* Columna Derecha: Selección de Fecha, Horas Manuales y Huecos de Referencia */}
                             <div className="lg:col-span-6 space-y-4 bg-muted/30 p-6 rounded-3xl border shadow-inner">
+                                {/* 1. Fecha de Cita */}
                                 <div className="space-y-2">
                                     <Label className="font-bold text-foreground text-sm flex items-center gap-2">
                                         <CalendarDays className="h-4 w-4 text-primary" />
-                                        {__('1. Seleccionar Fecha de Cita *')}
+                                        {__('1. Fecha de la Cita *')}
                                     </Label>
                                     <Input
                                         type="date"
                                         value={data.fecha_reserva}
-                                        min={new Date().toISOString().substring(0, 10)}
-                                        onChange={(e) => setData('fecha_reserva', e.target.value)}
+                                        onChange={(e) => handleFechaReservaChange(e.target.value)}
                                         className="h-11 rounded-xl bg-background border font-medium text-foreground"
                                     />
                                 </div>
 
+                                {/* 2. Horario Manual: Desde y Hasta */}
                                 <div className="space-y-2">
-                                    <div className="flex items-center justify-between">
-                                        <Label className="font-bold text-foreground text-sm flex items-center gap-2">
-                                            <Clock className="h-4 w-4 text-primary" />
-                                            {__('2. Turnos / Horarios Disponibles *')}
-                                        </Label>
-                                        {isLoadingSlots && <RefreshCw className="h-4 w-4 animate-spin text-primary" />}
+                                    <Label className="font-bold text-foreground text-sm flex items-center gap-2">
+                                        <Clock className="h-4 w-4 text-primary" />
+                                        {__('2. Horario de la Cita (Manual) *')}
+                                    </Label>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div className="space-y-1">
+                                            <span className="text-[11px] font-semibold text-muted-foreground flex items-center gap-1">
+                                                {__('Hora Desde')}
+                                            </span>
+                                            <Input
+                                                type="time"
+                                                value={data.hora_inicio}
+                                                onChange={(e) => handleHoraInicioChange(e.target.value)}
+                                                className="h-11 rounded-xl bg-background border font-semibold text-foreground text-sm"
+                                            />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <span className="text-[11px] font-semibold text-muted-foreground flex items-center gap-1">
+                                                {__('Hora Hasta')}
+                                            </span>
+                                            <Input
+                                                type="time"
+                                                value={data.hora_fin}
+                                                onChange={(e) => handleHoraFinChange(e.target.value)}
+                                                className="h-11 rounded-xl bg-background border font-semibold text-foreground text-sm"
+                                            />
+                                        </div>
                                     </div>
-
-                                    {availableSlots.length === 0 ? (
-                                        <div className="p-4 border-2 border-dashed rounded-2xl bg-background space-y-3">
-                                            <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
-                                                <AlertCircle className="h-5 w-5 shrink-0" />
-                                                <span className="text-xs font-semibold">
-                                                    {isLoadingSlots
-                                                        ? __('Calculando huecos disponibles...')
-                                                        : (!data.medico_id
-                                                            ? __('Seleccione un médico para cargar sus turnos disponibles, o ingrese una hora manual:')
-                                                            : __('Sin turnos automáticos en esta fecha (regla 2h anticipación / descanso).'))}
-                                                </span>
-                                            </div>
-                                            <div className="pt-2 border-t space-y-1.5">
-                                                <Label className="text-xs font-semibold text-muted-foreground">{__('Establecer hora manual (Recepción):')}</Label>
-                                                <Input
-                                                    type="time"
-                                                    onChange={(e) => {
-                                                        const manualIso = `${data.fecha_reserva}T${e.target.value}:00`;
-                                                        setSelectedSlotInicio(manualIso);
-                                                        setData('fecha_hora_inicio', manualIso);
-                                                    }}
-                                                    className="h-10 rounded-xl bg-muted/20 text-xs"
-                                                />
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <div className="grid grid-cols-3 gap-2 max-h-[200px] overflow-y-auto pr-1">
-                                            {availableSlots.map((slot, idx) => {
-                                                const isSelected = selectedSlotInicio === slot.inicio;
-                                                return (
-                                                    <button
-                                                        key={idx}
-                                                        type="button"
-                                                        onClick={() => {
-                                                            setSelectedSlotInicio(slot.inicio);
-                                                            setData('fecha_hora_inicio', slot.inicio);
-                                                        }}
-                                                        className={`p-2.5 rounded-xl text-xs font-bold border transition-all text-center ${isSelected
-                                                            ? 'bg-primary text-primary-foreground border-primary shadow-md scale-95'
-                                                            : 'bg-background hover:border-primary/50 text-foreground'
-                                                            }`}
-                                                    >
-                                                        {slot.hora_inicio_formateada}
-                                                    </button>
-                                                );
-                                            })}
-                                        </div>
-                                    )}
                                     {errors.fecha_hora_inicio && (
                                         <p className="text-xs text-rose-500 font-medium">{errors.fecha_hora_inicio}</p>
                                     )}
+                                    {errors.fecha_hora_fin && (
+                                        <p className="text-xs text-rose-500 font-medium">{errors.fecha_hora_fin}</p>
+                                    )}
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4 pt-2">
+                                {/* 3. Huecos / Horarios de Referencia del Doctor */}
+                                <div className="p-3.5 bg-background rounded-2xl border space-y-2.5 shadow-xs">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                                            <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+                                            {__('Huecos sugeridos del médico (Referencia):')}
+                                        </span>
+                                        {isLoadingSlots ? (
+                                            <RefreshCw className="h-3.5 w-3.5 animate-spin text-primary" />
+                                        ) : availableSlots.length > 0 ? (
+                                            <Badge variant="secondary" className="text-[10px] font-mono font-bold">
+                                                {availableSlots.length} {__('libres')}
+                                            </Badge>
+                                        ) : null}
+                                    </div>
+
+                                    {!data.medico_id ? (
+                                        <p className="text-[11px] text-muted-foreground italic">
+                                            {__('Selecciona un médico a la izquierda para consultar sus huecos y turnos disponibles de referencia.')}
+                                        </p>
+                                    ) : availableSlots.length === 0 ? (
+                                        <p className="text-[11px] text-muted-foreground italic">
+                                            {isLoadingSlots
+                                                ? __('Consultando disponibilidad del médico...')
+                                                : __('No hay turnos libres calculados para este médico en esta fecha. Puedes establecer cualquier horario manual arriba.')}
+                                        </p>
+                                    ) : (
+                                        <div className="space-y-1.5">
+                                            <span className="text-[10px] text-muted-foreground block">
+                                                {__('Haz clic en un turno para autocompletar las horas de inicio y fin:')}
+                                            </span>
+                                            <div className="grid grid-cols-3 gap-2 max-h-[140px] overflow-y-auto pr-1">
+                                                {availableSlots.map((slot, idx) => {
+                                                    const isSelected = selectedSlotInicio === slot.inicio;
+                                                    return (
+                                                        <button
+                                                            key={idx}
+                                                            type="button"
+                                                            onClick={() => handleSelectSlot(slot)}
+                                                            className={`p-2 rounded-xl text-xs font-semibold border transition-all text-center cursor-pointer ${isSelected
+                                                                ? 'bg-primary text-primary-foreground border-primary shadow-sm scale-95'
+                                                                : 'bg-muted/40 hover:bg-primary/10 hover:border-primary/40 text-foreground'
+                                                                }`}
+                                                            title={`${slot.hora_inicio_formateada} - ${slot.hora_fin_formateada}`}
+                                                        >
+                                                            <span className="block font-bold">{slot.hora_inicio_formateada}</span>
+                                                            <span className="text-[10px] opacity-75 font-mono">hasta {slot.hora_fin_formateada}</span>
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* 4. Monto y Duración */}
+                                <div className="grid grid-cols-2 gap-4 pt-1">
                                     <div className="space-y-1.5">
                                         <Label className="text-xs font-semibold text-foreground">{__('Monto Estimado ($)')}</Label>
                                         <Input
@@ -1772,7 +1893,7 @@ export default function Index({
                                         <Input
                                             type="number"
                                             value={data.duracion_minutos}
-                                            onChange={(e) => setData('duracion_minutos', parseInt(e.target.value) || 30)}
+                                            onChange={(e) => handleDuracionManualChange(parseInt(e.target.value) || 30)}
                                             className="h-11 rounded-xl bg-background border font-medium"
                                         />
                                     </div>

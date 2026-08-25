@@ -190,6 +190,7 @@ class CitaController extends Controller
             'tipo_atencion_id' => 'nullable|exists:tipos_atencion,id',
             'sucursal_id' => 'nullable|exists:sucursales,id',
             'fecha_hora_inicio' => 'required|date',
+            'fecha_hora_fin' => 'nullable|date|after:fecha_hora_inicio',
             'duracion_minutos' => 'nullable|integer|min:5',
             'motivo_consulta' => 'nullable|string|max:1000',
             'notas_recepcion' => 'nullable|string|max:1000',
@@ -199,15 +200,19 @@ class CitaController extends Controller
         $tipoAtencion = !empty($validated['tipo_atencion_id']) ? TipoAtencion::find($validated['tipo_atencion_id']) : null;
         $estudio = !empty($validated['catalogo_estudio_id']) ? CatalogoEstudio::find($validated['catalogo_estudio_id']) : null;
 
-        $duracion = $validated['duracion_minutos']
-            ?? $tipoAtencion->duracion_estimada_minutos
-            ?? $estudio->duracion_minutos
-            ?? 30;
-
         $inicio = Carbon::parse($validated['fecha_hora_inicio']);
-        $fin = $inicio->copy()->addMinutes($duracion);
+        if (!empty($validated['fecha_hora_fin'])) {
+            $fin = Carbon::parse($validated['fecha_hora_fin']);
+            $duracion = (int) max(5, $inicio->diffInMinutes($fin));
+        } else {
+            $duracion = $validated['duracion_minutos']
+                ?? $tipoAtencion->duracion_estimada_minutos
+                ?? $estudio->duracion_minutos
+                ?? 30;
+            $fin = $inicio->copy()->addMinutes($duracion);
+        }
 
-        // 1. Validar Anticipación Mínima (2 horas)
+        // 1. Validar Anticipación Mínima
         $this->citaService->validarAnticipacionMinima($inicio);
 
         // 2. Validar Overbooking solo si hay un médico asignado
@@ -267,6 +272,7 @@ class CitaController extends Controller
             'tipo_atencion_id' => 'nullable|exists:tipos_atencion,id',
             'sucursal_id' => 'nullable|exists:sucursales,id',
             'fecha_hora_inicio' => 'required|date',
+            'fecha_hora_fin' => 'nullable|date|after:fecha_hora_inicio',
             'duracion_minutos' => 'nullable|integer|min:5',
             'motivo_consulta' => 'nullable|string|max:1000',
             'notas_recepcion' => 'nullable|string|max:1000',
@@ -274,11 +280,16 @@ class CitaController extends Controller
         ]);
 
         $inicioNuevo = Carbon::parse($validated['fecha_hora_inicio']);
-        $duracion = $validated['duracion_minutos'] ?? $cita->duracion_minutos;
-        $finNuevo = $inicioNuevo->copy()->addMinutes($duracion);
+        if (!empty($validated['fecha_hora_fin'])) {
+            $finNuevo = Carbon::parse($validated['fecha_hora_fin']);
+            $duracion = (int) max(5, $inicioNuevo->diffInMinutes($finNuevo));
+        } else {
+            $duracion = $validated['duracion_minutos'] ?? $cita->duracion_minutos;
+            $finNuevo = $inicioNuevo->copy()->addMinutes($duracion);
+        }
 
         // Si se cambia la fecha u hora, verificar regla de cancelación/reagendamiento <24h y overbooking
-        if (!$cita->fecha_hora_inicio->eq($inicioNuevo)) {
+        if (!$cita->fecha_hora_inicio->eq($inicioNuevo) || !$cita->fecha_hora_fin->eq($finNuevo)) {
             $this->citaService->validarLimiteCancelacion($cita);
             if (!empty($validated['medico_id'])) {
                 $this->citaService->validarOverbooking((int) $validated['medico_id'], $inicioNuevo, $finNuevo, $cita->id);
