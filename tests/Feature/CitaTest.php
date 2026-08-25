@@ -159,20 +159,24 @@ class CitaTest extends TestCase
         $response->assertSessionHasErrors(['fecha_hora_inicio']);
     }
 
-    public function test_enforces_2_hour_lead_time_rule_for_today(): void
+    public function test_allows_same_day_immediate_booking_without_2_hour_restriction(): void
     {
-        // Intento de agendar cita dentro de 30 minutos (menos de 2 horas)
-        $fechaInvalida = Carbon::now()->addMinutes(30);
+        // Agendar cita dentro de 30 minutos (inmediata)
+        $fechaInmediata = Carbon::now()->addMinutes(30);
 
         $response = $this->actingAs($this->user)->post(route('admin.citas.store'), [
             'paciente_id' => $this->paciente->id,
             'medico_id' => $this->medico->id,
             'tipo_atencion_id' => $this->tipoAtencion->id,
-            'fecha_hora_inicio' => $fechaInvalida->toIso8601String(),
+            'fecha_hora_inicio' => $fechaInmediata->toIso8601String(),
             'duracion_minutos' => 30,
         ]);
 
-        $response->assertSessionHasErrors(['fecha_hora_inicio']);
+        $response->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('citas', [
+            'paciente_id' => $this->paciente->id,
+            'medico_id' => $this->medico->id,
+        ]);
     }
 
     public function test_enforces_24_hour_cancellation_limit_rule(): void
