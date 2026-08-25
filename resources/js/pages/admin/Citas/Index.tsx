@@ -1495,7 +1495,16 @@ export default function Index({
                     <div className="flex p-1 bg-muted/60 rounded-2xl border gap-1 mb-2">
                         <button
                             type="button"
-                            onClick={() => setData('categoria_cita', 'medica')}
+                            onClick={() => {
+                                setData((prev) => ({
+                                    ...prev,
+                                    categoria_cita: 'medica',
+                                    medico_id: prev.medico_id || medicos[0]?.id.toString() || '',
+                                    especialidad_id: prev.especialidad_id || medicos[0]?.especialidad_principal_id?.toString() || '',
+                                    tipo_atencion_id: prev.tipo_atencion_id || tiposAtencion[0]?.id.toString() || '',
+                                    catalogo_estudio_id: '',
+                                }));
+                            }}
                             className={cn(
                                 "flex-1 py-2.5 px-4 rounded-xl font-extrabold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer",
                                 data.categoria_cita === 'medica'
@@ -1508,7 +1517,15 @@ export default function Index({
                         </button>
                         <button
                             type="button"
-                            onClick={() => setData('categoria_cita', 'servicio')}
+                            onClick={() => {
+                                setData((prev) => ({
+                                    ...prev,
+                                    categoria_cita: 'servicio',
+                                    medico_id: '',
+                                    especialidad_id: '',
+                                    tipo_atencion_id: '',
+                                }));
+                            }}
                             className={cn(
                                 "flex-1 py-2.5 px-4 rounded-xl font-extrabold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer",
                                 data.categoria_cita === 'servicio'
@@ -1603,7 +1620,7 @@ export default function Index({
                                         <div className="space-y-2">
                                             <Label className="font-semibold text-foreground">{__('Técnico / Responsable Asignado (Opcional)')}</Label>
                                             <Select2
-                                                options={medicoSelectOptions}
+                                                options={tecnicoResponsableSelectOptions}
                                                 value={data.medico_id}
                                                 onChange={(val) => setData('medico_id', val)}
                                                 placeholder={__('Sin personal asignado (Atención por orden de llegada)...')}
