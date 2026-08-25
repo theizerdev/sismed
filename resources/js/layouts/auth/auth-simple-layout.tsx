@@ -17,9 +17,9 @@ export default function AuthSimpleLayout({
                             className="flex flex-col items-center gap-2 font-medium"
                         >
                             <img
-                                src="/image/logo/larareact_logo_transparent.webp"
-                                alt="Logo"
-                                className="h-40 w-auto object-contain"
+                                src="/image/logo/kenkou.png"
+                                alt="Kenkou Logo"
+                                className="h-20 w-auto object-contain"
                             />
                             <span className="sr-only">{title}</span>
                         </Link>
