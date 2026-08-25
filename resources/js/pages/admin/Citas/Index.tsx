@@ -1492,9 +1492,16 @@ export default function Index({
                             slotLabelInterval="01:00:00"
                             slotMinTime="07:00:00"
                             slotMaxTime="21:00:00"
+                            slotLabelFormat={{
+                                hour: 'numeric',
+                                minute: '2-digit',
+                                omitZeroMinute: false,
+                                meridiem: 'short',
+                                hour12: true,
+                            }}
                             allDaySlot={false}
-                            slotMinHeight={48}
-                            eventMinHeight={40}
+                            slotMinHeight={52}
+                            eventMinHeight={42}
                             expandRows={true}
                             datesSet={handleDatesSet}
                             eventDrop={handleEventDrop}
