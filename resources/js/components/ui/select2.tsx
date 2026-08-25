@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useState, useMemo, useRef, useEffect } from "react";
-import { Check, ChevronsUpDown, Search, X, User } from "lucide-react";
+import { Check, ChevronsUpDown, Search, X, User, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,6 +29,8 @@ interface Select2Props {
     disabled?: boolean;
     className?: string;
     size?: "sm" | "default" | "lg";
+    onCreateNew?: (searchTerm: string) => void;
+    createNewLabel?: string;
 }
 
 export function Select2({
@@ -41,6 +43,8 @@ export function Select2({
     disabled = false,
     className,
     size = "default",
+    onCreateNew,
+    createNewLabel,
 }: Select2Props) {
     const [isOpen, setIsOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
@@ -179,74 +183,105 @@ export function Select2({
                     {/* Options List */}
                     <div className="max-h-[240px] overflow-y-auto p-1.5 space-y-0.5">
                         {filteredOptions.length === 0 ? (
-                            <div className="p-4 text-center text-xs text-muted-foreground">
-                                {emptyText}
+                            <div className="p-4 text-center text-xs text-muted-foreground space-y-2">
+                                <p>{emptyText}</p>
+                                {onCreateNew && (
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setIsOpen(false);
+                                            onCreateNew(searchTerm);
+                                        }}
+                                        className="w-full py-2 px-3 bg-primary/10 hover:bg-primary text-primary hover:text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                                    >
+                                        <Plus className="h-3.5 w-3.5" />
+                                        {createNewLabel ? createNewLabel : (searchTerm ? `Crear "${searchTerm}"` : 'Crear nuevo')}
+                                    </button>
+                                )}
                             </div>
                         ) : (
-                            filteredOptions.map((option) => {
-                                const isSelected = option.value === value;
-                                return (
-                                    <button
-                                        key={option.value}
-                                        type="button"
-                                        disabled={option.disabled}
-                                        onClick={() => handleSelect(option.value)}
-                                        className={cn(
-                                            "flex w-full items-center justify-between gap-3 p-2.5 rounded-xl text-left text-xs transition-colors cursor-pointer",
-                                            isSelected
-                                                ? "bg-primary/10 text-primary font-semibold"
-                                                : "hover:bg-muted text-foreground",
-                                            option.disabled && "opacity-50 cursor-not-allowed"
-                                        )}
-                                    >
-                                        <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                                            {/* Avatar or Icon */}
-                                            {option.avatar ? (
-                                                <Avatar className="h-7 w-7 shrink-0 border">
-                                                    <AvatarImage src={option.avatar} alt={option.label} />
-                                                    <AvatarFallback className="text-[10px] bg-primary/10 text-primary font-bold">
-                                                        {option.label.substring(0, 2).toUpperCase()}
-                                                    </AvatarFallback>
-                                                </Avatar>
-                                            ) : option.color ? (
-                                                <span
-                                                    className="h-3.5 w-3.5 rounded-full shrink-0 shadow-xs"
-                                                    style={{ backgroundColor: option.color }}
-                                                />
-                                            ) : option.icon ? (
-                                                <span className="shrink-0 text-muted-foreground">{option.icon}</span>
-                                            ) : null}
+                            <>
+                                {filteredOptions.map((option) => {
+                                    const isSelected = option.value === value;
+                                    return (
+                                        <button
+                                            key={option.value}
+                                            type="button"
+                                            disabled={option.disabled}
+                                            onClick={() => handleSelect(option.value)}
+                                            className={cn(
+                                                "flex w-full items-center justify-between gap-3 p-2.5 rounded-xl text-left text-xs transition-colors cursor-pointer",
+                                                isSelected
+                                                    ? "bg-primary/10 text-primary font-semibold"
+                                                    : "hover:bg-muted text-foreground",
+                                                option.disabled && "opacity-50 cursor-not-allowed"
+                                            )}
+                                        >
+                                            <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                                                {/* Avatar or Icon */}
+                                                {option.avatar ? (
+                                                    <Avatar className="h-7 w-7 shrink-0 border">
+                                                        <AvatarImage src={option.avatar} alt={option.label} />
+                                                        <AvatarFallback className="text-[10px] bg-primary/10 text-primary font-bold">
+                                                            {option.label.substring(0, 2).toUpperCase()}
+                                                        </AvatarFallback>
+                                                    </Avatar>
+                                                ) : option.color ? (
+                                                    <span
+                                                        className="h-3.5 w-3.5 rounded-full shrink-0 shadow-xs"
+                                                        style={{ backgroundColor: option.color }}
+                                                    />
+                                                ) : option.icon ? (
+                                                    <span className="shrink-0 text-muted-foreground">{option.icon}</span>
+                                                ) : null}
 
-                                            {/* Main Text & Subtitle */}
-                                            <div className="min-w-0 flex-1">
-                                                <div className="font-semibold text-sm truncate flex items-center gap-2">
-                                                    <span>{option.label}</span>
-                                                </div>
-                                                {option.sublabel && (
-                                                    <div className="text-[11px] text-muted-foreground truncate">
-                                                        {option.sublabel}
+                                                {/* Main Text & Subtitle */}
+                                                <div className="min-w-0 flex-1">
+                                                    <div className="font-semibold text-sm truncate flex items-center gap-2">
+                                                        <span>{option.label}</span>
                                                     </div>
+                                                    {option.sublabel && (
+                                                        <div className="text-[11px] text-muted-foreground truncate">
+                                                            {option.sublabel}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            <div className="flex items-center gap-2 shrink-0">
+                                                {option.badge && (
+                                                    <Badge
+                                                        variant="outline"
+                                                        className="text-[10px] font-mono px-2 py-0.5 rounded-md"
+                                                    >
+                                                        {option.badge}
+                                                    </Badge>
+                                                )}
+
+                                                {isSelected && (
+                                                    <Check className="h-4 w-4 text-primary shrink-0" />
                                                 )}
                                             </div>
-                                        </div>
+                                        </button>
+                                    );
+                                })}
 
-                                        <div className="flex items-center gap-2 shrink-0">
-                                            {option.badge && (
-                                                <Badge
-                                                    variant="outline"
-                                                    className="text-[10px] font-mono px-2 py-0.5 rounded-md"
-                                                >
-                                                    {option.badge}
-                                                </Badge>
-                                            )}
-
-                                            {isSelected && (
-                                                <Check className="h-4 w-4 text-primary shrink-0" />
-                                            )}
-                                        </div>
-                                    </button>
-                                );
-                            })
+                                {onCreateNew && (
+                                    <div className="pt-1.5 mt-1 border-t border-border/50">
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setIsOpen(false);
+                                                onCreateNew(searchTerm);
+                                            }}
+                                            className="w-full py-2 px-3 text-primary hover:bg-primary/10 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                                        >
+                                            <Plus className="h-3.5 w-3.5" />
+                                            {createNewLabel ? createNewLabel : (searchTerm ? `Crear "${searchTerm}"` : 'Crear nuevo')}
+                                        </button>
+                                    </div>
+                                )}
+                            </>
                         )}
                     </div>
                 </div>

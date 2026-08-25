@@ -141,6 +141,7 @@ class CitaController extends Controller
             'especialidades' => Especialidad::select('id', 'nombre')->where('status', true)->get(),
             'tiposAtencion' => TipoAtencion::select('id', 'nombre', 'duracion_estimada_minutos', 'requiere_link_virtual', 'costo_adicional_sugerido', 'modalidad')->where('status', true)->get(),
             'sucursales' => Sucursal::select('id', 'nombre')->get(),
+            'paises' => \App\Models\Pais::where('activo', true)->get(['id', 'nombre', 'codigo_iso2', 'codigo_telefonico']),
             'estadisticas' => $estadisticas,
             'filters' => $request->only(['search', 'fecha', 'medico_id', 'especialidad_id', 'tipo_atencion_id', 'estado']),
         ]);
@@ -295,11 +296,14 @@ class CitaController extends Controller
     public function updateEstado(Request $request, Cita $cita)
     {
         $validated = $request->validate([
-            'estado' => 'required|in:pendiente,confirmada_pagada,en_sala_espera,en_consulta,atendida,cancelada,no_asistio',
+            'estado' => 'required|in:pendiente,confirmada,confirmada_pagada,en_sala_espera,en_consulta,atendida,cancelada,no_asistio',
             'motivo_cancelacion' => 'required_if:estado,cancelada|nullable|string|max:500',
         ]);
 
         $nuevoEstado = $validated['estado'];
+        if ($nuevoEstado === 'confirmada') {
+            $nuevoEstado = 'confirmada_pagada';
+        }
 
         // Si se intenta cancelar, verificar límite de 24h
         if ($nuevoEstado === 'cancelada' && $cita->estado !== 'cancelada') {
@@ -308,11 +312,18 @@ class CitaController extends Controller
             $cita->cancelado_por_user_id = Auth::id();
         }
 
-        // Trazabilidad de tiempos clínicos
-        if ($nuevoEstado === 'confirmada_pagada' && !$cita->fecha_confirmacion) {
-            $cita->fecha_confirmacion = now();
-            $cita->estado_pago = 'pagado';
-            $cita->monto_pagado = $cita->monto_estimado;
+        // Trazabilidad de tiempos clínicos de confirmación
+        if (in_array($nuevoEstado, ['confirmada', 'confirmada_pagada'])) {
+            if (!$cita->fecha_confirmacion) {
+                $cita->fecha_confirmacion = now();
+            }
+            // Generar o vincular enlace de preconsulta para la cita
+            try {
+                $preconsultaService = app(\App\Services\PreconsultaService::class);
+                $preconsultaService->obtenerOGenerarPreconsulta($cita);
+            } catch (\Exception $e) {
+                // Log exception silently
+            }
         }
 
         if ($nuevoEstado === 'en_sala_espera') {
@@ -367,6 +378,29 @@ class CitaController extends Controller
         return back()->with('success', 'Estado de la cita cambiado a: ' . $cita->estado_formateado);
     }
 
+    /**
+     * Actualiza el estado de pago y monto pagado en caja para la cita.
+     */
+    public function updatePago(Request $request, Cita $cita)
+    {
+        $validated = $request->validate([
+            'estado_pago' => 'required|in:pendiente,pagado,parcial,reembolsado',
+            'monto_pagado' => 'nullable|numeric|min:0',
+        ]);
+
+        $cita->estado_pago = $validated['estado_pago'];
+        if ($validated['estado_pago'] === 'pagado') {
+            $cita->monto_pagado = $validated['monto_pagado'] ?? $cita->monto_estimado;
+        } elseif ($validated['estado_pago'] === 'pendiente') {
+            $cita->monto_pagado = 0.00;
+        } elseif (isset($validated['monto_pagado'])) {
+            $cita->monto_pagado = $validated['monto_pagado'];
+        }
+
+        $cita->save();
+
+        return back()->with('success', 'Estado de pago actualizado a: ' . $cita->estado_pago_formateado);
+    }
 
     public function destroy(Cita $cita)
     {
@@ -386,17 +420,37 @@ class CitaController extends Controller
             return back()->with('error', 'El paciente no tiene un número de teléfono registrado.');
         }
 
+        // Generar o recuperar enlace de preconsulta
+        $linkPreconsulta = null;
+        try {
+            $preconsultaService = app(\App\Services\PreconsultaService::class);
+            $preconsulta = $preconsultaService->obtenerOGenerarPreconsulta($cita);
+            $linkPreconsulta = url('/preconsulta/' . $preconsulta->token);
+        } catch (\Exception $e) {
+            // Ignorar si no hay plantilla activa
+        }
+
         $fechaFormateada = $cita->fecha_hora_inicio->format('d/m/Y h:i A');
-        $mensaje = "🗓️ *RECORDATORIO DE CITA MÉDICA - SISMED*\n\n"
-            . "Hola *{$paciente->nombres}*,\n"
+        $nombrePaciente = $paciente->tipo_paciente === 'animal'
+            ? "{$paciente->nombre_mascota} (Tutor: {$paciente->tutor_nombre})"
+            : "{$paciente->nombres}";
+
+        $mensaje = "*CONFIRMACIÓN DE CITA MÉDICA - SISMED*\n\n"
+            . "Hola *{$nombrePaciente}*,\n"
             . "Le recordamos su próxima consulta médica:\n\n"
-            . "📌 *Código:* {$cita->codigo_cita}\n"
-            . "👨‍⚕️ *Médico:* Dr(a). {$medico->nombres} {$medico->apellidos}\n"
-            . "🩺 *Tipo de Atención:* " . ($cita->tipoAtencion->nombre ?? 'Consulta') . "\n"
-            . "⏰ *Fecha y Hora:* {$fechaFormateada}\n\n";
+            . "*Código:* {$cita->codigo_cita}\n"
+            . "*Médico:* Dr(a). {$medico->nombres} {$medico->apellidos}\n"
+            . "*Tipo de Atención:* " . ($cita->tipoAtencion->nombre ?? 'Consulta') . "\n"
+            . "*Fecha y Hora:* {$fechaFormateada}\n\n";
 
         if ($cita->link_virtual) {
-            $mensaje .= "💻 *Enlace Virtual:* {$cita->link_virtual}\n\n";
+            $mensaje .= "*Enlace Virtual:* {$cita->link_virtual}\n\n";
+        }
+
+        if ($linkPreconsulta) {
+            $mensaje .= "📋 *CUESTIONARIO DE PRE-CONSULTA:*\n"
+                . "Por favor complete este breve formulario antes de su consulta médica para agilizar su atención:\n"
+                . "👉 {$linkPreconsulta}\n\n";
         }
 
         $mensaje .= "Por favor confirme su asistencia respondiendo a este mensaje. ¡Le esperamos!";
@@ -408,7 +462,7 @@ class CitaController extends Controller
             'fecha_envio_recordatorio' => now(),
         ]);
 
-        return back()->with('success', 'Recordatorio de cita enviado exitosamente vía WhatsApp.');
+        return back()->with('success', 'Confirmación y enlace de Preconsulta enviados exitosamente vía WhatsApp.');
     }
 
     /**

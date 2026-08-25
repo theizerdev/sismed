@@ -148,7 +148,15 @@ class PacienteController extends Controller
 
         $validated['empresa_id'] = $user->empresa_id;
 
-        Paciente::create($validated);
+        $paciente = Paciente::create($validated);
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Paciente registrado con éxito.',
+                'paciente' => $paciente,
+            ]);
+        }
 
         return back()->with('success', 'Paciente registrado con éxito.');
     }

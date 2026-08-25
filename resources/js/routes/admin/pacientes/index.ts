@@ -134,7 +134,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     store.form = storeForm
 /**
 * @see \App\Http\Controllers\Admin\PacienteController::update
- * @see app/Http/Controllers/Admin/PacienteController.php:159
+ * @see app/Http/Controllers/Admin/PacienteController.php:167
  * @route '/admin/pacientes/{paciente}'
  */
 export const update = (args: { paciente: number | { id: number } } | [paciente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -149,7 +149,7 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\PacienteController::update
- * @see app/Http/Controllers/Admin/PacienteController.php:159
+ * @see app/Http/Controllers/Admin/PacienteController.php:167
  * @route '/admin/pacientes/{paciente}'
  */
 update.url = (args: { paciente: number | { id: number } } | [paciente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -182,7 +182,7 @@ update.url = (args: { paciente: number | { id: number } } | [paciente: number | 
 
 /**
 * @see \App\Http\Controllers\Admin\PacienteController::update
- * @see app/Http/Controllers/Admin/PacienteController.php:159
+ * @see app/Http/Controllers/Admin/PacienteController.php:167
  * @route '/admin/pacientes/{paciente}'
  */
 update.put = (args: { paciente: number | { id: number } } | [paciente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -192,7 +192,7 @@ update.put = (args: { paciente: number | { id: number } } | [paciente: number | 
 
     /**
 * @see \App\Http\Controllers\Admin\PacienteController::update
- * @see app/Http/Controllers/Admin/PacienteController.php:159
+ * @see app/Http/Controllers/Admin/PacienteController.php:167
  * @route '/admin/pacientes/{paciente}'
  */
     const updateForm = (args: { paciente: number | { id: number } } | [paciente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -207,7 +207,7 @@ update.put = (args: { paciente: number | { id: number } } | [paciente: number | 
 
             /**
 * @see \App\Http\Controllers\Admin\PacienteController::update
- * @see app/Http/Controllers/Admin/PacienteController.php:159
+ * @see app/Http/Controllers/Admin/PacienteController.php:167
  * @route '/admin/pacientes/{paciente}'
  */
         updateForm.put = (args: { paciente: number | { id: number } } | [paciente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -223,7 +223,7 @@ update.put = (args: { paciente: number | { id: number } } | [paciente: number | 
     update.form = updateForm
 /**
 * @see \App\Http\Controllers\Admin\PacienteController::toggleStatus
- * @see app/Http/Controllers/Admin/PacienteController.php:210
+ * @see app/Http/Controllers/Admin/PacienteController.php:218
  * @route '/admin/pacientes/{paciente}/toggle-status'
  */
 export const toggleStatus = (args: { paciente: number | { id: number } } | [paciente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -238,7 +238,7 @@ toggleStatus.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\PacienteController::toggleStatus
- * @see app/Http/Controllers/Admin/PacienteController.php:210
+ * @see app/Http/Controllers/Admin/PacienteController.php:218
  * @route '/admin/pacientes/{paciente}/toggle-status'
  */
 toggleStatus.url = (args: { paciente: number | { id: number } } | [paciente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -271,7 +271,7 @@ toggleStatus.url = (args: { paciente: number | { id: number } } | [paciente: num
 
 /**
 * @see \App\Http\Controllers\Admin\PacienteController::toggleStatus
- * @see app/Http/Controllers/Admin/PacienteController.php:210
+ * @see app/Http/Controllers/Admin/PacienteController.php:218
  * @route '/admin/pacientes/{paciente}/toggle-status'
  */
 toggleStatus.patch = (args: { paciente: number | { id: number } } | [paciente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -281,7 +281,7 @@ toggleStatus.patch = (args: { paciente: number | { id: number } } | [paciente: n
 
     /**
 * @see \App\Http\Controllers\Admin\PacienteController::toggleStatus
- * @see app/Http/Controllers/Admin/PacienteController.php:210
+ * @see app/Http/Controllers/Admin/PacienteController.php:218
  * @route '/admin/pacientes/{paciente}/toggle-status'
  */
     const toggleStatusForm = (args: { paciente: number | { id: number } } | [paciente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -296,7 +296,7 @@ toggleStatus.patch = (args: { paciente: number | { id: number } } | [paciente: n
 
             /**
 * @see \App\Http\Controllers\Admin\PacienteController::toggleStatus
- * @see app/Http/Controllers/Admin/PacienteController.php:210
+ * @see app/Http/Controllers/Admin/PacienteController.php:218
  * @route '/admin/pacientes/{paciente}/toggle-status'
  */
         toggleStatusForm.patch = (args: { paciente: number | { id: number } } | [paciente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -312,7 +312,7 @@ toggleStatus.patch = (args: { paciente: number | { id: number } } | [paciente: n
     toggleStatus.form = toggleStatusForm
 /**
 * @see \App\Http\Controllers\Admin\PacienteController::sendWhatsappWelcome
- * @see app/Http/Controllers/Admin/PacienteController.php:230
+ * @see app/Http/Controllers/Admin/PacienteController.php:238
  * @route '/admin/pacientes/{paciente}/send-whatsapp-welcome'
  */
 export const sendWhatsappWelcome = (args: { paciente: number | { id: number } } | [paciente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -327,7 +327,7 @@ sendWhatsappWelcome.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\PacienteController::sendWhatsappWelcome
- * @see app/Http/Controllers/Admin/PacienteController.php:230
+ * @see app/Http/Controllers/Admin/PacienteController.php:238
  * @route '/admin/pacientes/{paciente}/send-whatsapp-welcome'
  */
 sendWhatsappWelcome.url = (args: { paciente: number | { id: number } } | [paciente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -360,7 +360,7 @@ sendWhatsappWelcome.url = (args: { paciente: number | { id: number } } | [pacien
 
 /**
 * @see \App\Http\Controllers\Admin\PacienteController::sendWhatsappWelcome
- * @see app/Http/Controllers/Admin/PacienteController.php:230
+ * @see app/Http/Controllers/Admin/PacienteController.php:238
  * @route '/admin/pacientes/{paciente}/send-whatsapp-welcome'
  */
 sendWhatsappWelcome.post = (args: { paciente: number | { id: number } } | [paciente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -370,7 +370,7 @@ sendWhatsappWelcome.post = (args: { paciente: number | { id: number } } | [pacie
 
     /**
 * @see \App\Http\Controllers\Admin\PacienteController::sendWhatsappWelcome
- * @see app/Http/Controllers/Admin/PacienteController.php:230
+ * @see app/Http/Controllers/Admin/PacienteController.php:238
  * @route '/admin/pacientes/{paciente}/send-whatsapp-welcome'
  */
     const sendWhatsappWelcomeForm = (args: { paciente: number | { id: number } } | [paciente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -380,7 +380,7 @@ sendWhatsappWelcome.post = (args: { paciente: number | { id: number } } | [pacie
 
             /**
 * @see \App\Http\Controllers\Admin\PacienteController::sendWhatsappWelcome
- * @see app/Http/Controllers/Admin/PacienteController.php:230
+ * @see app/Http/Controllers/Admin/PacienteController.php:238
  * @route '/admin/pacientes/{paciente}/send-whatsapp-welcome'
  */
         sendWhatsappWelcomeForm.post = (args: { paciente: number | { id: number } } | [paciente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -391,7 +391,7 @@ sendWhatsappWelcome.post = (args: { paciente: number | { id: number } } | [pacie
     sendWhatsappWelcome.form = sendWhatsappWelcomeForm
 /**
 * @see \App\Http\Controllers\Admin\PacienteController::destroy
- * @see app/Http/Controllers/Admin/PacienteController.php:220
+ * @see app/Http/Controllers/Admin/PacienteController.php:228
  * @route '/admin/pacientes/{paciente}'
  */
 export const destroy = (args: { paciente: number | { id: number } } | [paciente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -406,7 +406,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\PacienteController::destroy
- * @see app/Http/Controllers/Admin/PacienteController.php:220
+ * @see app/Http/Controllers/Admin/PacienteController.php:228
  * @route '/admin/pacientes/{paciente}'
  */
 destroy.url = (args: { paciente: number | { id: number } } | [paciente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -439,7 +439,7 @@ destroy.url = (args: { paciente: number | { id: number } } | [paciente: number |
 
 /**
 * @see \App\Http\Controllers\Admin\PacienteController::destroy
- * @see app/Http/Controllers/Admin/PacienteController.php:220
+ * @see app/Http/Controllers/Admin/PacienteController.php:228
  * @route '/admin/pacientes/{paciente}'
  */
 destroy.delete = (args: { paciente: number | { id: number } } | [paciente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -449,7 +449,7 @@ destroy.delete = (args: { paciente: number | { id: number } } | [paciente: numbe
 
     /**
 * @see \App\Http\Controllers\Admin\PacienteController::destroy
- * @see app/Http/Controllers/Admin/PacienteController.php:220
+ * @see app/Http/Controllers/Admin/PacienteController.php:228
  * @route '/admin/pacientes/{paciente}'
  */
     const destroyForm = (args: { paciente: number | { id: number } } | [paciente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -464,7 +464,7 @@ destroy.delete = (args: { paciente: number | { id: number } } | [paciente: numbe
 
             /**
 * @see \App\Http\Controllers\Admin\PacienteController::destroy
- * @see app/Http/Controllers/Admin/PacienteController.php:220
+ * @see app/Http/Controllers/Admin/PacienteController.php:228
  * @route '/admin/pacientes/{paciente}'
  */
         destroyForm.delete = (args: { paciente: number | { id: number } } | [paciente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

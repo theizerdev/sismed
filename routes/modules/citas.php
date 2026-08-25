@@ -28,6 +28,10 @@ Route::middleware(['verified', 'auth', 'tenant'])->group(function () {
         ->name('citas.update-estado')
         ->can('citas.cambiar_estado');
 
+    Route::patch('/citas/{cita}/pago', [CitaController::class, 'updatePago'])
+        ->name('citas.update-pago')
+        ->can('citas.edit');
+
     Route::delete('/citas/{cita}', [CitaController::class, 'destroy'])
         ->name('citas.destroy')
         ->can('citas.delete');

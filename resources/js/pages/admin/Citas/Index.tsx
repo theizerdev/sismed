@@ -34,6 +34,7 @@ import {
     ArrowRight,
     PanelLeftClose,
     PanelLeftOpen,
+    UserPlus,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -41,6 +42,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select2, Select2Option } from '@/components/ui/select2';
+import ModalCrearPacienteRapido from './Partials/ModalCrearPacienteRapido';
+import type { PaisPhoneOption } from '../Empresas/Partials/PhoneInputGroup';
 import {
     Select,
     SelectContent,
@@ -254,6 +257,7 @@ interface Props {
     especialidades: Especialidad[];
     tiposAtencion: TipoAtencion[];
     sucursales: Sucursal[];
+    paises?: PaisPhoneOption[];
     estadisticas: {
         citas_hoy: number;
         confirmadas: number;
@@ -272,10 +276,20 @@ export default function Index({
     especialidades,
     tiposAtencion,
     sucursales,
+    paises = [],
     estadisticas,
     filters,
 }: Props) {
     const __ = (key: string) => key;
+
+    // ── Local Patients State (for immediate selection upon quick creation) ────
+    const [pacientesList, setPacientesList] = useState<Paciente[]>(pacientes);
+    const [isQuickCreatePacienteOpen, setIsQuickCreatePacienteOpen] = useState(false);
+    const [quickCreateSearchTerm, setQuickCreateSearchTerm] = useState('');
+
+    useEffect(() => {
+        setPacientesList(pacientes);
+    }, [pacientes]);
 
     // ── Search & Filter States ────────────────────────────────────────────────
     const [searchTerm, setSearchTerm] = useState(filters.search || '');
@@ -591,14 +605,14 @@ export default function Index({
 
     // ── Select2 Mapped Options ────────────────────────────────────────────────
     const pacienteSelectOptions: Select2Option[] = useMemo(() => {
-        return pacientes.map((p) => ({
+        return pacientesList.map((p) => ({
             value: p.id.toString(),
             label: p.tipo_paciente === 'animal' ? `🐾 ${p.nombre_mascota}` : `${p.nombres} ${p.apellidos}`,
             sublabel: p.tipo_paciente === 'animal' ? `Tutor: ${p.tutor_nombre}` : `Código: ${p.codigo_paciente} ${p.telefono ? '• Tel: ' + p.telefono : ''}`,
             badge: p.codigo_paciente,
             icon: p.tipo_paciente === 'animal' ? <PawPrint className="h-4 w-4 text-emerald-500" /> : <User className="h-4 w-4 text-blue-500" />,
         }));
-    }, [pacientes]);
+    }, [pacientesList]);
 
     const medicoSelectOptions: Select2Option[] = useMemo(() => {
         return medicos.map((m) => {
@@ -825,11 +839,13 @@ export default function Index({
         // Actualización optimista de estado local para respuesta UI instantánea
         const estadoFormateadoMap: Record<string, string> = {
             pendiente: 'Pendiente',
-            confirmada_pagada: 'Confirmada / Pagada',
+            confirmada: 'Confirmada',
+            confirmada_pagada: 'Confirmada',
             en_sala_espera: 'En Sala de Espera',
             en_consulta: 'En Consultorio',
             atendida: 'Atendida',
             cancelada: 'Cancelada',
+            no_asistio: 'No Asistió',
         };
 
         setSelectedCita((prev) => {
@@ -848,10 +864,40 @@ export default function Index({
                 preserveScroll: true,
                 preserveState: true,
                 onSuccess: () => {
-                    notifySuccess(__('Estado de la cita actualizado correctamente.'));
+                    notifySuccess(__('Estado de la cita actualizado a: ') + (estadoFormateadoMap[nuevoEstado] || nuevoEstado));
                 },
                 onError: () => {
                     notifyError(__('No se pudo actualizar el estado de la cita.'));
+                },
+            }
+        );
+    };
+
+    const handleTogglePago = (cita: Cita, nuevoEstadoPago: 'pagado' | 'pendiente') => {
+        setSelectedCita((prev) => {
+            if (!prev) return null;
+            return {
+                ...prev,
+                estado_pago: nuevoEstadoPago,
+                monto_pagado: nuevoEstadoPago === 'pagado' ? prev.monto_estimado : 0,
+            };
+        });
+
+        router.patch(
+            `/admin/citas/${cita.id}/pago`,
+            { estado_pago: nuevoEstadoPago },
+            {
+                preserveScroll: true,
+                preserveState: true,
+                onSuccess: () => {
+                    notifySuccess(
+                        nuevoEstadoPago === 'pagado'
+                            ? __('Consulta marcada como Pagada en Caja.')
+                            : __('Estado cambiado a Pago Pendiente.')
+                    );
+                },
+                onError: () => {
+                    notifyError(__('No se pudo actualizar el estado de pago.'));
                 },
             }
         );
@@ -1265,13 +1311,31 @@ export default function Index({
                             <div className="lg:col-span-6 space-y-4">
                                 {/* Paciente */}
                                 <div className="space-y-2">
-                                    <Label className="font-semibold text-foreground">{__('Paciente *')}</Label>
+                                    <div className="flex items-center justify-between">
+                                        <Label className="font-semibold text-foreground">{__('Paciente *')}</Label>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setQuickCreateSearchTerm('');
+                                                setIsQuickCreatePacienteOpen(true);
+                                            }}
+                                            className="text-xs text-primary hover:text-primary/80 font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                                        >
+                                            <UserPlus className="h-3.5 w-3.5" />
+                                            <span>{__('+ Nuevo Paciente')}</span>
+                                        </button>
+                                    </div>
                                     <Select2
                                         options={pacienteSelectOptions}
                                         value={data.paciente_id}
                                         onChange={(val) => setData('paciente_id', val)}
                                         placeholder={__('Seleccionar paciente...')}
                                         searchPlaceholder={__('Buscar por nombre, código o tutor...')}
+                                        onCreateNew={(term) => {
+                                            setQuickCreateSearchTerm(term);
+                                            setIsQuickCreatePacienteOpen(true);
+                                        }}
+                                        createNewLabel={__('+ Registrar Nuevo Paciente')}
                                     />
                                     {errors.paciente_id && <p className="text-xs text-rose-500 font-medium">{errors.paciente_id}</p>}
                                 </div>
@@ -1493,16 +1557,48 @@ export default function Index({
                                 </div>
                             </div>
 
-                            {/* Fecha, Hora y Telemedicina */}
+                            {/* Fecha, Hora, Telemedicina y Estado de Pago en Caja */}
                             <div className="space-y-3">
-                                <div className="flex items-center justify-between p-3 bg-muted/30 rounded-2xl border text-xs">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 bg-muted/30 rounded-2xl border gap-2 text-xs">
                                     <span className="text-slate-700 dark:text-slate-300 font-bold flex items-center gap-2">
-                                        <Clock className="h-4 w-4 text-indigo-600" />
+                                        <Clock className="h-4 w-4 text-indigo-600 shrink-0" />
                                         {new Date(selectedCita.fecha_hora_inicio.replace(' ', 'T')).toLocaleString([], { dateStyle: 'full', timeStyle: 'short' })}
                                     </span>
-                                    <span className="font-extrabold text-emerald-700 bg-emerald-500/10 px-3 py-1 rounded-xl border border-emerald-500/20">
-                                        ${selectedCita.monto_estimado} USD
-                                    </span>
+
+                                    {/* Estado de Pago en Caja (Diferenciado de la Confirmación Clínica) */}
+                                    <div className="flex items-center gap-2 self-end sm:self-auto">
+                                        {selectedCita.estado_pago === 'pagado' ? (
+                                            <div className="flex items-center gap-1.5">
+                                                <span className="font-extrabold text-emerald-700 dark:text-emerald-300 bg-emerald-500/15 border border-emerald-500/30 px-3 py-1 rounded-xl flex items-center gap-1.5">
+                                                    <DollarSign className="size-3.5 text-emerald-600" />
+                                                    {__('Pagada en Caja')} (${Number(selectedCita.monto_pagado || selectedCita.monto_estimado).toFixed(2)} USD)
+                                                </span>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleTogglePago(selectedCita, 'pendiente')}
+                                                    title={__('Cambiar a Pendiente de Pago')}
+                                                    className="text-[10px] text-muted-foreground hover:text-rose-500 underline cursor-pointer px-1"
+                                                >
+                                                    {__('Modificar')}
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-bold text-amber-700 dark:text-amber-300 bg-amber-500/15 border border-amber-500/30 px-2.5 py-1 rounded-xl flex items-center gap-1">
+                                                    <DollarSign className="size-3.5 text-amber-600" />
+                                                    {__('Pago Pendiente')} (${Number(selectedCita.monto_estimado).toFixed(2)} USD)
+                                                </span>
+                                                <Button
+                                                    type="button"
+                                                    size="sm"
+                                                    onClick={() => handleTogglePago(selectedCita, 'pagado')}
+                                                    className="h-7 text-[11px] font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-xs px-2.5 cursor-pointer"
+                                                >
+                                                    {__('Cobrar en Caja')}
+                                                </Button>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
 
                                 {selectedCita.link_virtual && (
@@ -1601,8 +1697,8 @@ export default function Index({
                                             <SelectValue placeholder={__('Cambiar Estado...')} />
                                         </SelectTrigger>
                                         <SelectContent className="rounded-2xl">
-                                            <SelectItem value="pendiente" className="text-xs font-bold">🟡 Pendiente</SelectItem>
-                                            <SelectItem value="confirmada_pagada" className="text-xs font-bold">🟢 Confirmada / Pagado</SelectItem>
+                                            <SelectItem value="pendiente" className="text-xs font-bold">🟡 Pendiente por Confirmar</SelectItem>
+                                            <SelectItem value="confirmada_pagada" className="text-xs font-bold">🟢 Cita Confirmada</SelectItem>
                                             <SelectItem value="en_sala_espera" className="text-xs font-bold">🔵 Llegó a Recepción</SelectItem>
                                             <SelectItem value="en_consulta" className="text-xs font-bold">🟣 En Consultorio</SelectItem>
                                             <SelectItem value="atendida" className="text-xs font-bold">🟠 Atendida / Finalizada</SelectItem>
@@ -1764,6 +1860,18 @@ export default function Index({
                     </div>
                 </div>
             )}
+
+            {/* Modal de Creación Rápida de Paciente */}
+            <ModalCrearPacienteRapido
+                isOpen={isQuickCreatePacienteOpen}
+                onClose={() => setIsQuickCreatePacienteOpen(false)}
+                initialSearch={quickCreateSearchTerm}
+                paises={paises}
+                onSuccess={(newPaciente) => {
+                    setPacientesList((prev) => [newPaciente, ...prev]);
+                    setData('paciente_id', newPaciente.id.toString());
+                }}
+            />
         </div>
     );
 }

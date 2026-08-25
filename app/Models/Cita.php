@@ -81,29 +81,40 @@ class Cita extends Model
     public function getColorEstadoAttribute(): string
     {
         return match ($this->estado) {
-            'confirmada_pagada' => '#10b981', // 🟢 Verde: Confirmada y pagada
-            'pendiente'         => '#eab308', // 🟡 Amarillo: Pendiente por confirmar/pago
-            'en_sala_espera'    => '#3b82f6', // 🔵 Azul: Paciente en recepción/sala de espera
-            'en_consulta'       => '#8b5cf6', // 🟣 Morado: Paciente en consulta con médico
-            'atendida'          => '#f97316', // 🟠 Naranja: Atención finalizada
-            'cancelada'         => '#ef4444', // 🔴 Rojo: Cancelada
-            'no_asistio', 'bloqueado' => '#64748b', // ⚪ Gris: Inasistencia o Bloqueado
-            default             => '#3b82f6',
+            'confirmada_pagada', 'confirmada' => '#10b981', // 🟢 Verde: Cita Confirmada
+            'pendiente'                       => '#eab308', // 🟡 Amarillo: Pendiente por Confirmar
+            'en_sala_espera'                  => '#3b82f6', // 🔵 Azul: Llegó a Recepción / Sala de espera
+            'en_consulta'                     => '#8b5cf6', // 🟣 Morado: En Consultorio con médico
+            'atendida'                        => '#f97316', // 🟠 Naranja: Atención finalizada
+            'cancelada'                       => '#ef4444', // 🔴 Rojo: Cancelada
+            'no_asistio', 'bloqueado'         => '#64748b', // ⚪ Gris: Inasistencia o Bloqueado
+            default                           => '#3b82f6',
         };
     }
 
     public function getEstadoFormateadoAttribute(): string
     {
         return match ($this->estado) {
-            'confirmada_pagada' => 'Confirmada / Pagada',
-            'pendiente'         => 'Pendiente por Confirmar',
-            'en_sala_espera'    => 'En Sala de Espera',
-            'en_consulta'       => 'En Consulta Médica',
-            'atendida'          => 'Atendida / Finalizada',
-            'cancelada'         => 'Cancelada',
-            'no_asistio'        => 'No Asistió',
-            'bloqueado'         => 'Horario Bloqueado',
-            default             => ucfirst($this->estado),
+            'confirmada_pagada', 'confirmada' => 'Confirmada',
+            'pendiente'                       => 'Pendiente por Confirmar',
+            'en_sala_espera'                  => 'En Sala de Espera',
+            'en_consulta'                     => 'En Consultorio',
+            'atendida'                        => 'Atendida / Finalizada',
+            'cancelada'                       => 'Cancelada',
+            'no_asistio'                      => 'No Asistió',
+            'bloqueado'                       => 'Horario Bloqueado',
+            default                           => ucfirst($this->estado),
+        };
+    }
+
+    public function getEstadoPagoFormateadoAttribute(): string
+    {
+        return match ($this->estado_pago) {
+            'pagado'      => 'Pagada en Caja',
+            'pendiente'   => 'Pago Pendiente',
+            'parcial'     => 'Pago Parcial',
+            'reembolsado' => 'Reembolsado',
+            default       => ucfirst($this->estado_pago ?? 'pendiente'),
         };
     }
 
