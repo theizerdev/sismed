@@ -797,18 +797,10 @@ export default function Index({
     }, [medicoSelectOptions, medicos, data.especialidad_id]);
 
     const handleEspecialidadChange = (especialidadId: string) => {
-        const docsInSpec = medicos.filter(
-            (m) => !especialidadId || especialidadId === 'all' || m.especialidad_principal_id?.toString() === especialidadId
-        );
-        const isCurrentDocValid = docsInSpec.some((m) => m.id.toString() === data.medico_id);
-        const newMedicoId = isCurrentDocValid
-            ? data.medico_id
-            : docsInSpec[0]?.id.toString() || '';
-
         setData((prev) => ({
             ...prev,
             especialidad_id: especialidadId,
-            medico_id: newMedicoId,
+            medico_id: '',
             fecha_hora_inicio: '',
         }));
         setSelectedSlotInicio('');
@@ -858,9 +850,7 @@ export default function Index({
     const handleCreateClick = (slotTime?: string, duracionMin: number = 30) => {
         setEditingCita(null);
         reset();
-        const defaultMedico = medicos[0]?.id.toString() || '';
         const defaultTipo = tiposAtencion[0]?.id.toString() || '';
-        const defaultDocObj = medicos[0];
 
         const initialFecha = slotTime
             ? slotTime.substring(0, 10)
@@ -869,9 +859,9 @@ export default function Index({
         setData({
             categoria_cita: 'medica',
             catalogo_estudio_id: '',
-            paciente_id: pacientes[0]?.id.toString() || '',
-            medico_id: defaultMedico,
-            especialidad_id: defaultDocObj?.especialidad_principal_id?.toString() || especialidades[0]?.id.toString() || '',
+            paciente_id: '',
+            medico_id: '',
+            especialidad_id: '',
             tipo_atencion_id: defaultTipo,
             sucursal_id: sucursales[0]?.id.toString() || '',
             fecha_reserva: initialFecha,
@@ -1737,7 +1727,9 @@ export default function Index({
                                                 <span className="text-xs font-semibold">
                                                     {isLoadingSlots
                                                         ? __('Calculando huecos disponibles...')
-                                                        : __('Sin turnos automáticos en esta fecha (regla 2h anticipación / descanso).')}
+                                                        : (!data.medico_id
+                                                            ? __('Seleccione un médico para cargar sus turnos disponibles, o ingrese una hora manual:')
+                                                            : __('Sin turnos automáticos en esta fecha (regla 2h anticipación / descanso).'))}
                                                 </span>
                                             </div>
                                             <div className="pt-2 border-t space-y-1.5">
