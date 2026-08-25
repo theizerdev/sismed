@@ -31,8 +31,7 @@
         </style>
 
         @php
-            $favicon = '/image/logo/logo_innovacion-movil.png';
-           
+            $favicon = '/image/logo/kenkou_shield.png';
         @endphp
         <link rel="icon" href="{{ $favicon }}" type="image/png">
         <link rel="apple-touch-icon" href="{{ $favicon }}">
