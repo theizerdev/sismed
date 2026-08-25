@@ -734,7 +734,26 @@ export default function Index({
     ], [medicoSelectOptions]);
 
     // ── Debounced Filtering ───────────────────────────────────────────────────
+    const isFirstRender = useRef(true);
+    const prevFiltersRef = useRef({ searchTerm, medicoFilter, especialidadFilter, tipoAtencionFilter, estadoFilter });
+
     useEffect(() => {
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            return;
+        }
+
+        const prev = prevFiltersRef.current;
+        const hasChanged =
+            prev.searchTerm !== searchTerm ||
+            prev.medicoFilter !== medicoFilter ||
+            prev.especialidadFilter !== especialidadFilter ||
+            prev.tipoAtencionFilter !== tipoAtencionFilter ||
+            prev.estadoFilter !== estadoFilter;
+
+        if (!hasChanged) return;
+        prevFiltersRef.current = { searchTerm, medicoFilter, especialidadFilter, tipoAtencionFilter, estadoFilter };
+
         const timer = setTimeout(() => {
             router.get(
                 window.location.pathname,
@@ -745,7 +764,7 @@ export default function Index({
                     tipo_atencion_id: tipoAtencionFilter,
                     estado: estadoFilter,
                 }),
-                { preserveState: true, preserveScroll: true }
+                { preserveState: true, preserveScroll: true, replace: true }
             );
         }, 300);
 
@@ -1052,13 +1071,21 @@ export default function Index({
         if (editingCita) {
             put(`/admin/citas/${editingCita.id}`, {
                 preserveScroll: true,
-                onSuccess: () => setIsCreateModalOpen(false),
+                preserveState: true,
+                onSuccess: () => {
+                    setIsCreateModalOpen(false);
+                    notifySuccess(__('Cita médica actualizada correctamente.'));
+                },
                 onError: (errs) => notifyError((Object.values(errs)[0] as string) || __('Por favor revisa los campos.')),
             });
         } else {
             post('/admin/citas', {
                 preserveScroll: true,
-                onSuccess: () => setIsCreateModalOpen(false),
+                preserveState: true,
+                onSuccess: () => {
+                    setIsCreateModalOpen(false);
+                    notifySuccess(__('Cita registrada con éxito.'));
+                },
                 onError: (errs) => notifyError((Object.values(errs)[0] as string) || __('Por favor revisa los campos.')),
             });
         }
@@ -2359,7 +2386,7 @@ export default function Index({
 
                     <div className="space-y-4 py-2">
                         <p className="text-xs text-muted-foreground">
-                            {__('Atención: La regla del sistema exige un margen de 24 horas para cancelaciones. Si faltan menos de 24 horas, se aplicará restricción.')}
+                            {__('Esta acción cancelará la cita y liberará el horario en la agenda.')}
                         </p>
                         <div className="space-y-2">
                             <Label>{__('Motivo de Cancelación *')}</Label>

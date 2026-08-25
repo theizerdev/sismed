@@ -179,9 +179,9 @@ class CitaTest extends TestCase
         ]);
     }
 
-    public function test_enforces_24_hour_cancellation_limit_rule(): void
+    public function test_allows_flexible_cancellation_and_modification_without_24_hour_limit(): void
     {
-        // Cita programada para dentro de 5 horas (menos de 24 horas)
+        // Cita programada para dentro de 5 horas
         $citaProxima = Cita::create([
             'empresa_id' => $this->empresa->id,
             'paciente_id' => $this->paciente->id,
@@ -194,10 +194,11 @@ class CitaTest extends TestCase
 
         $response = $this->actingAs($this->user)->patch(route('admin.citas.update-estado', $citaProxima->id), [
             'estado' => 'cancelada',
-            'motivo_cancelacion' => 'Motivo tarde',
+            'motivo_cancelacion' => 'Paciente solicitó mover la cita',
         ]);
 
-        $response->assertSessionHasErrors(['estado']);
+        $response->assertSessionHasNoErrors();
+        $this->assertEquals('cancelada', $citaProxima->fresh()->estado);
     }
 
     public function test_can_update_cita_status_and_timestamps(): void

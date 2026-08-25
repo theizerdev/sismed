@@ -169,15 +169,11 @@ class CitaService
     }
 
     /**
-     * Validar límite de cancelación o modificación (<24 horas).
+     * Validar límite de cancelación o modificación (restricción de 24 horas eliminada para permitir reagendamientos y cancelaciones en cualquier momento).
      */
     public function validarLimiteCancelacion(Cita $cita): void
     {
-        if (Carbon::now()->diffInHours($cita->fecha_hora_inicio, false) < 24) {
-            throw ValidationException::withMessages([
-                'estado' => 'No es posible cancelar ni modificar citas cuando faltan menos de 24 horas para la fecha agendada.',
-            ]);
-        }
+        // Sin restricción de 24 horas
     }
 
     /**
