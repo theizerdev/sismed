@@ -21,7 +21,7 @@ import {
     Activity,
     Link2,
 } from 'lucide-react';
-import { Building2, GitBranch, Briefcase, Calendar, Fingerprint, Stethoscope, HeartPulse, ClipboardList, FileText } from 'lucide-react';
+import { Building2, GitBranch, Briefcase, Calendar, Fingerprint, Stethoscope, HeartPulse, ClipboardList, FileText, Sliders } from 'lucide-react';
 import * as React from 'react';
 import LanguageToggle from '@/components/language-toggle';
 import TemplateCustomizer from '@/components/template-customizer';
@@ -71,7 +71,7 @@ type AdminSaasLayoutProps = {
 
 const mainNavItems: NavItem[] = [
     {
-        title: 'Dashboard',
+        title: 'Panel Principal',
         href: dashboard(),
         icon: LayoutDashboard,
     },
@@ -88,16 +88,25 @@ function NavItem({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
         <Link
             href={item.href}
             className={cn(
-                'group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all',
+                'group flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-all duration-200',
                 active
-                    ? 'bg-primary/10 text-primary font-semibold'
-                    : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+                    ? 'bg-primary text-white font-semibold shadow-sm'
+                    : 'text-slate-300 hover:bg-white/10 hover:text-white',
             )}
         >
-            {item.icon && <item.icon className="size-5 shrink-0" />}
+            {item.icon && (
+                <div
+                    className={cn(
+                        'size-7 rounded-lg flex items-center justify-center transition-all shrink-0',
+                        active ? 'text-white' : 'text-slate-400 group-hover:text-white'
+                    )}
+                >
+                    <item.icon className="size-4" />
+                </div>
+            )}
             <span
                 className={cn(
-                    'whitespace-nowrap transition-opacity duration-300',
+                    'whitespace-nowrap tracking-tight transition-opacity duration-300',
                     collapsed && 'opacity-0',
                 )}
             >
@@ -109,7 +118,9 @@ function NavItem({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
     return collapsed ? (
         <Tooltip>
             <TooltipTrigger asChild>{linkContent}</TooltipTrigger>
-            <TooltipContent side="right">{__(item.title)}</TooltipContent>
+            <TooltipContent side="right" className="bg-popover text-popover-foreground border border-border shadow-xl rounded-xl p-2 font-medium text-xs">
+                {__(item.title)}
+            </TooltipContent>
         </Tooltip>
     ) : (
         linkContent
@@ -155,28 +166,32 @@ function CollapsibleNavItem({
                     <button
                         onClick={handleToggle}
                         className={cn(
-                            'group flex w-full items-center justify-center rounded-lg p-2.5 text-sm font-medium transition-all text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
-                            isAnyActive && 'bg-primary/10 text-primary'
+                            'group flex w-full items-center justify-center rounded-xl p-2.5 text-sm font-medium transition-all text-slate-300 hover:bg-white/10 hover:text-white',
+                            isAnyActive && 'bg-primary/20 text-primary shadow-xs'
                         )}
                     >
-                        <Icon className="size-5 shrink-0" />
+                        <Icon className={cn('size-5 shrink-0 transition-transform group-hover:scale-110', isAnyActive ? 'text-primary' : 'text-slate-400 group-hover:text-white')} />
                     </button>
                 </TooltipTrigger>
-                <TooltipContent side="right">
-                    <div className="flex flex-col gap-1 p-1">
-                        <p className="font-semibold text-white border-b border-sidebar-border pb-1 mb-1">{__(title)}</p>
-                        {items.map((item, idx) => (
-                            <Link
-                                key={idx}
-                                href={item.href}
-                                className={cn(
-                                    'text-xs py-1 px-2 rounded hover:bg-sidebar-accent block',
-                                    url.startsWith(item.href) ? 'text-primary font-semibold' : 'text-sidebar-foreground/80'
-                                )}
-                            >
-                                {__(item.title)}
-                            </Link>
-                        ))}
+                <TooltipContent side="right" className="bg-popover text-popover-foreground border border-border shadow-xl rounded-xl p-2 min-w-44">
+                    <div className="flex flex-col gap-1">
+                        <p className="font-bold text-xs uppercase tracking-wider text-slate-400 border-b border-border/50 pb-1.5 mb-1">{__(title)}</p>
+                        {items.map((item, idx) => {
+                            const active = url === item.href || (url.startsWith(item.href) && item.href.length > 22 && !url.includes('/garita'));
+                            return (
+                                <Link
+                                    key={idx}
+                                    href={item.href}
+                                    className={cn(
+                                        'text-xs py-1.5 px-2.5 rounded-lg transition-all flex items-center justify-between',
+                                        active ? 'bg-primary text-white font-semibold shadow-xs' : 'text-slate-300 hover:bg-white/10 hover:text-white'
+                                    )}
+                                >
+                                    <span>{__(item.title)}</span>
+                                    {active && <span className="size-1.5 rounded-full bg-white animate-pulse" />}
+                                </Link>
+                            );
+                        })}
                     </div>
                 </TooltipContent>
             </Tooltip>
@@ -188,23 +203,32 @@ function CollapsibleNavItem({
             <button
                 onClick={handleToggle}
                 className={cn(
-                    'group flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-all text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
-                    isAnyActive && 'bg-sidebar-accent/30 text-sidebar-foreground/90 font-semibold'
+                    'group flex w-full items-center justify-between rounded-xl px-3 py-2 text-sm font-medium transition-all',
+                    isAnyActive
+                        ? 'text-white font-semibold bg-white/10'
+                        : 'text-slate-300 hover:bg-white/10 hover:text-white'
                 )}
             >
                 <div className="flex items-center gap-3">
-                    <Icon className="size-5 shrink-0" />
-                    <span className="whitespace-nowrap">{__(title)}</span>
+                    <div className={cn(
+                        'size-7 rounded-lg flex items-center justify-center transition-all shrink-0',
+                        isAnyActive ? 'bg-primary/25 text-primary' : 'text-slate-400 group-hover:text-white'
+                    )}>
+                        <Icon className="size-4" />
+                    </div>
+                    <span className="whitespace-nowrap tracking-tight">{__(title)}</span>
                 </div>
-                {isOpen ? (
-                    <ChevronDown className="size-4 text-slate-500 group-hover:text-slate-300" />
-                ) : (
-                    <ChevronRight className="size-4 text-slate-500 group-hover:text-slate-300" />
-                )}
+                <div className="text-slate-400 group-hover:text-white transition-transform duration-200">
+                    {isOpen ? (
+                        <ChevronDown className="size-3.5" />
+                    ) : (
+                        <ChevronRight className="size-3.5" />
+                    )}
+                </div>
             </button>
 
             {isOpen && (
-                <div className="pl-9 space-y-1 transition-all duration-300">
+                <div className="ml-6 pl-3 border-l border-white/15 space-y-1 pt-1 pb-1 transition-all duration-300">
                     {items.map((item, idx) => {
                         const active = url === item.href || (url.startsWith(item.href) && item.href.length > 22 && !url.includes('/garita'));
 
@@ -213,13 +237,16 @@ function CollapsibleNavItem({
                                 key={idx}
                                 href={item.href}
                                 className={cn(
-                                    'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all block',
+                                    'group relative flex items-center justify-between rounded-lg px-3 py-2 text-xs font-medium transition-all duration-200',
                                     active
-                                        ? 'text-primary font-semibold'
-                                        : 'text-sidebar-foreground/60 hover:text-sidebar-accent-foreground'
+                                        ? 'bg-primary text-white font-semibold shadow-sm'
+                                        : 'text-slate-300 hover:text-white hover:bg-white/10'
                                 )}
                             >
-                                {__(item.title)}
+                                <span className="truncate">{__(item.title)}</span>
+                                {active && (
+                                    <span className="size-1.5 rounded-full bg-white/90 shadow-sm shrink-0 ml-2" />
+                                )}
                             </Link>
                         );
                     })}
@@ -379,11 +406,11 @@ export default function AdminSaasLayout({
                                 collapsed && 'opacity-0',
                             )}
                         >
-                            {__('Platform')}
+                            {__('Plataforma')}
                         </p>
                         {mainNavItems
                             .filter(item => {
-                                if (item.title === 'Dashboard') {
+                                if (item.title === 'Panel Principal' || item.title === 'Dashboard') {
                                     return hasPermission('dashboard.view');
                                 }
                                 return true;
@@ -397,62 +424,22 @@ export default function AdminSaasLayout({
                             ))
                         }
 
-                        {/* Organization Group */}
-                        {(() => {
-                            const orgItems = [
-                                {
-                                    title: 'Companies',
-                                    href: empresasIndex.url(),
-                                    permission: 'empresas.view',
-                                },
-                                {
-                                    title: 'Branches',
-                                    href: sucursalesIndex.url(),
-                                    permission: 'sucursales.view',
-                                },
-
-                            ].filter(item => hasPermission(item.permission));
-
-                            if (orgItems.length === 0) return null;
-
-                            return (
-                                <div className="pt-4">
-                                    <CollapsibleNavItem
-                                        title="Organization"
-                                        icon={Briefcase}
-                                        collapsed={collapsed}
-                                        items={orgItems}
-                                    />
-                                </div>
-                            );
-                        })()}
-
-                        {/* Consultas Group */}
+                        {/* Consultas Médicas Group */}
                         {(() => {
                             const consultasItems = [
                                 {
-                                    title: '🔵 Sala de Espera',
+                                    title: 'Sala de Espera',
                                     href: '/admin/consultas/sala-de-espera',
                                     permission: 'citas.view',
                                 },
                                 {
-                                    title: '🟣 En Consultorio',
+                                    title: 'En Consultorio',
                                     href: '/admin/consultas/en-consultorio',
                                     permission: 'citas.view',
                                 },
                                 {
-                                    title: '🟢 Consultas Finalizadas',
+                                    title: 'Consultas Finalizadas',
                                     href: '/admin/consultas/finalizadas',
-                                    permission: 'citas.view',
-                                },
-                                {
-                                    title: '📋 Preconsulta',
-                                    href: '/admin/plantillas-preconsulta',
-                                    permission: 'citas.view',
-                                },
-                                {
-                                    title: '⚡ Campos por Especialidad',
-                                    href: '/admin/plantillas-consultas',
                                     permission: 'citas.view',
                                 },
                             ].filter(item => hasPermission(item.permission));
@@ -462,7 +449,7 @@ export default function AdminSaasLayout({
                             return (
                                 <div className="pt-2">
                                     <CollapsibleNavItem
-                                        title="Consultas"
+                                        title="Consultas Médicas"
                                         icon={HeartPulse}
                                         collapsed={collapsed}
                                         items={consultasItems}
@@ -471,54 +458,42 @@ export default function AdminSaasLayout({
                             );
                         })()}
 
-                        {/* Health & Medical Group */}
+                        {/* Gestión Médica Group */}
                         {(() => {
-                            const userEmpresaId = currentUser?.empresa_id || 1;
                             const healthItems = [
                                 {
-                                    title: 'Appointments',
+                                    title: 'Citas y Agenda',
                                     href: '/admin/citas',
                                     permission: 'citas.view',
                                 },
                                 {
-                                    title: 'Patients',
+                                    title: 'Pacientes',
                                     href: '/admin/pacientes',
                                     permission: 'pacientes.view',
                                 },
                                 {
-                                    title: 'Doctors & Staff',
+                                    title: 'Médicos y Personal',
                                     href: '/admin/medicos',
                                     permission: 'medicos.view',
                                 },
                                 {
-                                    title: 'Medical Specialties',
-                                    href: '/admin/especialidades',
-                                    permission: 'especialidades.edit',
-                                },
-                                {
-                                    title: 'Care Types',
-                                    href: '/admin/tipos-atencion',
-                                    permission: 'tipos_atencion.view',
-                                },
-                                {
-                                    title: 'Medical Records',
+                                    title: 'Expedientes Clínicos',
                                     href: '/admin/expedientes',
                                     permission: 'expedientes.view',
                                 },
                                 {
-                                    title: 'Prescriptions',
+                                    title: 'Recetas Médicas',
                                     href: '/admin/recetas',
                                     permission: 'recetas.view',
                                 },
                             ].filter(item => hasPermission(item.permission));
-
 
                             if (healthItems.length === 0) return null;
 
                             return (
                                 <div className="pt-2">
                                     <CollapsibleNavItem
-                                        title="Health Management"
+                                        title="Gestión Médica"
                                         icon={Stethoscope}
                                         collapsed={collapsed}
                                         items={healthItems}
@@ -527,18 +502,84 @@ export default function AdminSaasLayout({
                             );
                         })()}
 
+                        {/* Especialidades & Plantillas Clínicas */}
+                        {(() => {
+                            const especialidadesItems = [
+                                {
+                                    title: 'Especialidades Médicas',
+                                    href: '/admin/especialidades',
+                                    permission: 'especialidades.edit',
+                                },
+                                {
+                                    title: 'Campos por Especialidad',
+                                    href: '/admin/plantillas-consultas',
+                                    permission: 'citas.view',
+                                },
+                                {
+                                    title: 'Plantillas de Preconsulta',
+                                    href: '/admin/plantillas-preconsulta',
+                                    permission: 'citas.view',
+                                },
+                                {
+                                    title: 'Tipos de Atención',
+                                    href: '/admin/tipos-atencion',
+                                    permission: 'tipos_atencion.view',
+                                },
+                            ].filter(item => hasPermission(item.permission));
 
+                            if (especialidadesItems.length === 0) return null;
+
+                            return (
+                                <div className="pt-2">
+                                    <CollapsibleNavItem
+                                        title="Especialidades"
+                                        icon={Sliders}
+                                        collapsed={collapsed}
+                                        items={especialidadesItems}
+                                    />
+                                </div>
+                            );
+                        })()}
+
+                        {/* Organización Group */}
+                        {(() => {
+                            const orgItems = [
+                                {
+                                    title: 'Empresas',
+                                    href: empresasIndex.url(),
+                                    permission: 'empresas.view',
+                                },
+                                {
+                                    title: 'Sucursales',
+                                    href: sucursalesIndex.url(),
+                                    permission: 'sucursales.view',
+                                },
+                            ].filter(item => hasPermission(item.permission));
+
+                            if (orgItems.length === 0) return null;
+
+                            return (
+                                <div className="pt-2">
+                                    <CollapsibleNavItem
+                                        title="Organización"
+                                        icon={Briefcase}
+                                        collapsed={collapsed}
+                                        items={orgItems}
+                                    />
+                                </div>
+                            );
+                        })()}
+
+                        {/* Configuración Group */}
                         {(() => {
                             const settingsItems = [
-
                                 {
-                                    title: 'Countries',
+                                    title: 'Países',
                                     href: paisesIndex.url(),
                                     permission: 'paises.view',
                                 },
-
                                 {
-                                    title: 'Appearance',
+                                    title: 'Apariencia y Tema',
                                     href: appearanceEdit().url,
                                     permission: 'empresas.view',
                                 },
@@ -549,7 +590,7 @@ export default function AdminSaasLayout({
                             return (
                                 <div className="pt-2">
                                     <CollapsibleNavItem
-                                        title="Settings"
+                                        title="Configuración"
                                         icon={Settings}
                                         collapsed={collapsed}
                                         items={settingsItems}
@@ -558,15 +599,14 @@ export default function AdminSaasLayout({
                             );
                         })()}
 
-                        {/* Integrations Group */}
+                        {/* Integraciones Group */}
                         {(() => {
                             const integrationsItems = [
                                 {
-                                    title: 'Catalog',
+                                    title: 'Catálogo de Integraciones',
                                     href: integrationsIndex.url(),
                                     permission: 'integrations.view',
                                 },
-
                             ].filter(item => hasPermission(item.permission));
 
                             if (integrationsItems.length === 0) return null;
@@ -574,7 +614,7 @@ export default function AdminSaasLayout({
                             return (
                                 <div className="pt-2">
                                     <CollapsibleNavItem
-                                        title="Integrations"
+                                        title="Integraciones"
                                         icon={Link2}
                                         collapsed={collapsed}
                                         items={integrationsItems}
@@ -583,16 +623,16 @@ export default function AdminSaasLayout({
                             );
                         })()}
 
-                        {/* Security Group */}
+                        {/* Seguridad Group */}
                         {(() => {
                             const securityItems = [
                                 {
-                                    title: 'Users',
+                                    title: 'Usuarios',
                                     href: usuariosIndex.url(),
                                     permission: 'users.view',
                                 },
                                 {
-                                    title: 'Roles',
+                                    title: 'Roles y Permisos',
                                     href: rolesIndex.url(),
                                     permission: 'roles.view',
                                 },
@@ -603,7 +643,7 @@ export default function AdminSaasLayout({
                             return (
                                 <div className="pt-2">
                                     <CollapsibleNavItem
-                                        title="Security"
+                                        title="Seguridad y Accesos"
                                         icon={Shield}
                                         collapsed={collapsed}
                                         items={securityItems}
@@ -612,36 +652,36 @@ export default function AdminSaasLayout({
                             );
                         })()}
 
-                        {/* Monitoring Group */}
+                        {/* Monitoreo Group */}
                         {(() => {
                             const monitoringItems = [
                                 {
-                                    title: 'Database',
+                                    title: 'Base de Datos',
                                     href: dbMonitoringIndex.url(),
                                     permission: 'monitoreo.database',
                                 },
                                 {
-                                    title: 'Server',
+                                    title: 'Servidor',
                                     href: serverMonitoringIndex.url(),
                                     permission: 'monitoreo.server',
                                 },
                                 {
-                                    title: 'User Sessions',
+                                    title: 'Sesiones Activas',
                                     href: sessionMonitoringIndex.url(),
                                     permission: 'monitoreo.logins',
                                 },
                                 {
-                                    title: 'System Logs',
+                                    title: 'Registros de Sistema (Logs)',
                                     href: logMonitoringIndex.url(),
                                     permission: 'monitoreo.view',
                                 },
                                 {
-                                    title: 'Queue Monitor',
+                                    title: 'Colas y Procesos',
                                     href: queuesMonitoringIndex.url(),
                                     permission: 'monitoreo.view',
                                 },
                                 {
-                                    title: 'Scheduled Tasks',
+                                    title: 'Tareas Programadas',
                                     href: tasksMonitoringIndex.url(),
                                     permission: 'monitoreo.view',
                                 },
@@ -652,7 +692,7 @@ export default function AdminSaasLayout({
                             return (
                                 <div className="pt-2">
                                     <CollapsibleNavItem
-                                        title="Monitoring"
+                                        title="Monitoreo"
                                         icon={Activity}
                                         collapsed={collapsed}
                                         items={monitoringItems}
